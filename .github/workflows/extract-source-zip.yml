@@ -1,0 +1,218 @@
+name: LEXA Source ZIP Import
+
+on:
+  workflow_dispatch:
+    inputs:
+      archive_sha256:
+        description: SHA-256 of the exact LEXA-clean-source.zip uploaded to the repository root
+        required: true
+        type: string
+        default: 6c5bbafef525f5aeae345b793f2587662046385f5ac0a422884fbb83d4a01dfd
+      expected_head_sha:
+        description: Full 40-character HEAD SHA of main after the ZIP and workflows have been committed
+        required: true
+        type: string
+      confirmation:
+        description: Explicit confirmation to import the source ZIP into a review branch
+        required: true
+        type: choice
+        options:
+          - NO
+          - IMPORT_CLEAN_SOURCE
+        default: NO
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: lexa-source-import-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  import-source:
+    name: Verify ZIP and open source-import pull request
+    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'IMPORT_CLEAN_SOURCE' }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out the current main branch
+        uses: actions/checkout@v7
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Verify the expected base commit and stage the archive safely
+        shell: bash
+        env:
+          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+          ARCHIVE_SHA256: ${{ inputs.archive_sha256 }}
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-fA-F]{40}$ ]] || { echo 'Expected HEAD must be a full 40-character SHA.' >&2; exit 1; }
+          [[ "$ARCHIVE_SHA256" =~ ^[0-9a-fA-F]{64}$ ]] || { echo 'Archive SHA-256 must be 64 hexadecimal characters.' >&2; exit 1; }
+          [[ "$(git branch --show-current)" == "main" ]] || { echo 'Run this workflow from main.' >&2; exit 1; }
+          actual_head="$(git rev-parse HEAD)"
+          [[ "$actual_head" == "$EXPECTED_HEAD_SHA" ]] || { echo "main changed: expected $EXPECTED_HEAD_SHA, found $actual_head" >&2; exit 1; }
+          [[ -z "$(git status --porcelain)" ]] || { echo 'Checkout is not clean.' >&2; exit 1; }
+          test -s "$GITHUB_WORKSPACE/LEXA-clean-source.zip" || { echo 'Upload LEXA-clean-source.zip to the repository root first.' >&2; exit 1; }
+          cp "$GITHUB_WORKSPACE/LEXA-clean-source.zip" "$RUNNER_TEMP/LEXA-clean-source.zip"
+          echo "Base commit verified: $actual_head"
+
+          python - <<'PY'
+          import hashlib, os, shutil, stat
+          from pathlib import Path, PurePosixPath
+          from zipfile import BadZipFile, ZipFile
+
+          archive = Path(os.environ['RUNNER_TEMP']) / 'LEXA-clean-source.zip'
+          stage = Path(os.environ['RUNNER_TEMP']) / 'lexa-source-stage'
+          expected = os.environ['ARCHIVE_SHA256'].lower()
+          digest = hashlib.sha256(archive.read_bytes()).hexdigest()
+          if digest != expected:
+              raise SystemExit(f'Archive SHA-256 mismatch: expected {expected}, found {digest}')
+          if stage.exists():
+              shutil.rmtree(stage)
+          stage.mkdir(parents=True)
+
+          required = {
+              'README.md', '.env.example', 'render.yaml',
+              'apps/api/app/main.py', 'apps/api/pyproject.toml',
+              'apps/web/package.json', 'apps/web/package-lock.json',
+              'migrations/README.md',
+          }
+          try:
+              zf = ZipFile(archive)
+          except (OSError, BadZipFile) as exc:
+              raise SystemExit(f'Invalid ZIP archive: {exc}')
+
+          seen, folded, file_names = set(), set(), set()
+          files = [i for i in zf.infolist() if not i.is_dir()]
+          if not files or len(files) > 20000:
+              raise SystemExit('ZIP is empty or contains too many files.')
+          if sum(i.file_size for i in files) > 500 * 1024 * 1024:
+              raise SystemExit('ZIP uncompressed size exceeds the 500 MiB safety limit.')
+          for info in zf.infolist():
+              raw = info.filename
+              if '\\' in raw or raw.startswith('/') or (len(raw) >= 2 and raw[1] == ':'):
+                  raise SystemExit(f'Unsafe ZIP path: {raw!r}')
+              rel = PurePosixPath(raw.rstrip('/'))
+              if not rel.parts or any(p in ('', '.', '..') for p in rel.parts):
+                  raise SystemExit(f'Unsafe ZIP path: {raw!r}')
+              if '.git' in rel.parts:
+                  raise SystemExit('ZIP must not contain .git metadata.')
+              mode = (info.external_attr >> 16) & 0xffff
+              kind = stat.S_IFMT(mode)
+              if kind and kind not in (stat.S_IFREG, stat.S_IFDIR):
+                  raise SystemExit(f'Non-regular archive entry refused: {raw!r}')
+              if info.is_dir():
+                  continue
+              name = rel.as_posix()
+              if name in seen or name.casefold() in folded:
+                  raise SystemExit(f'Duplicate or case-colliding archive path: {name}')
+              seen.add(name)
+              folded.add(name.casefold())
+              file_names.add(name)
+              base = rel.name
+              if (base == '.env' or (base.startswith('.env.') and base != '.env.example')
+                      or base.lower().endswith(('.pem', '.p12', '.pfx', '.key'))):
+                  raise SystemExit(f'Potential local secret/key file refused: {name}')
+
+          missing = sorted(required - file_names)
+          if missing:
+              raise SystemExit('Archive is missing required source files: ' + ', '.join(missing))
+
+          count = 0
+          for info in files:
+              rel = PurePosixPath(info.filename)
+              name = rel.as_posix()
+              # Workflow files are installed separately in the destination repository.
+              if name.startswith('.github/workflows/'):
+                  continue
+              destination = stage.joinpath(*rel.parts)
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              with zf.open(info) as src, destination.open('wb') as dst:
+                  shutil.copyfileobj(src, dst)
+              permissions = (info.external_attr >> 16) & 0o777
+              if permissions:
+                  destination.chmod(permissions & 0o755)
+              count += 1
+          zf.close()
+          if count == 0:
+              raise SystemExit('No source files were staged.')
+          print(f'Archive SHA-256 verified: {digest}')
+          print(f'Staged {count} source files; ZIP-contained workflows were skipped.')
+          PY
+
+      - name: Create a review branch
+        shell: bash
+        env:
+          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+        run: |
+          set -euo pipefail
+          [[ "$(git rev-parse HEAD)" == "$EXPECTED_HEAD_SHA" ]] || { echo 'Base commit changed.' >&2; exit 1; }
+          git switch -c "automation/import-clean-source-${GITHUB_RUN_ID}"
+
+      - name: Replace source files while preserving the separately installed workflows
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import shutil, os
+          from pathlib import Path
+          root = Path(os.environ['GITHUB_WORKSPACE'])
+          stage = Path(os.environ['RUNNER_TEMP']) / 'lexa-source-stage'
+          preserved = Path(os.environ['RUNNER_TEMP']) / 'lexa-preserved-workflows'
+          workflows = root / '.github' / 'workflows'
+          if not workflows.is_dir() or not any(workflows.iterdir()):
+              raise SystemExit('Install extract-source-zip.yml, ci.yml, and ai-builder.yml under .github/workflows before importing.')
+          if preserved.exists():
+              shutil.rmtree(preserved)
+          shutil.copytree(workflows, preserved)
+          for child in list(root.iterdir()):
+              if child.name == '.git':
+                  continue
+              if child.is_dir() and not child.is_symlink():
+                  shutil.rmtree(child)
+              else:
+                  child.unlink()
+          for child in stage.iterdir():
+              target = root / child.name
+              if child.is_dir():
+                  shutil.copytree(child, target)
+              else:
+                  shutil.copy2(child, target)
+          target_workflows = root / '.github' / 'workflows'
+          target_workflows.mkdir(parents=True, exist_ok=True)
+          shutil.copytree(preserved, target_workflows, dirs_exist_ok=True)
+          print('Source tree imported; manually installed workflow files were preserved.')
+          PY
+          git status --short
+          git add --all
+          git diff --cached --check -- .github/workflows
+          git diff --cached --quiet && { echo 'No changes to import.' >&2; exit 1; }
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'chore: import verified clean LEXA source'
+
+      - name: Push the review branch and open a pull request
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          remote_head="$(git ls-remote origin refs/heads/main | awk 'NR == 1 {print $1}')"
+          [[ "$remote_head" == "$EXPECTED_HEAD_SHA" ]] || { echo "main advanced during import; expected $EXPECTED_HEAD_SHA, found ${remote_head:-unknown}. No push attempted." >&2; exit 1; }
+          branch="$(git branch --show-current)"
+          git push --set-upstream origin "$branch"
+          gh pr create \
+            --base main \
+            --head "$branch" \
+            --title 'chore: import clean LEXA source' \
+            --body 'Imports the SHA-256-verified source ZIP into a review branch. Workflow files were installed separately and preserved. Review the diff and wait for CI before merging. Neon PostgreSQL and hosted Render/Vercel resources are not touched by this workflow.'
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/dispatches" --method POST -f "ref=${branch}"
+          echo "Review branch pushed and CI dispatch requested: $branch"
