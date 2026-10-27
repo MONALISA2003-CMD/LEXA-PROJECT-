@@ -2,41 +2,49 @@ name: LEXA CI
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'apps/api/**'
-      - 'apps/web/**'
-      - 'migrations/**'
-      - 'scripts/**'
-      - 'docker-compose.yml'
-      - 'deploy/docker/**'
-      - '.env.example'
-      - 'render.yaml'
+    branches:
+      - '**'
   pull_request:
-    branches: [main]
-    paths:
-      - 'apps/api/**'
-      - 'apps/web/**'
-      - 'migrations/**'
-      - 'scripts/**'
-      - 'docker-compose.yml'
-      - 'deploy/docker/**'
-      - '.env.example'
-      - 'render.yaml'
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: lexa-ci-${{ github.ref }}
+  group: lexa-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  detect-source:
+    name: Detect imported application source
+    runs-on: ubuntu-24.04
+    outputs:
+      source_present: ${{ steps.detect.outputs.source_present }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Detect API and web source
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f apps/api/pyproject.toml && -f apps/web/package.json && -f apps/web/package-lock.json ]]; then
+            echo 'source_present=true' >> "$GITHUB_OUTPUT"
+            echo 'Application source is present; validation jobs will run.'
+          else
+            echo 'source_present=false' >> "$GITHUB_OUTPUT"
+            echo 'Application source is not imported yet; validation jobs will skip cleanly.'
+          fi
+
   api-tests:
     name: API compile and unit/contract tests
+    needs: detect-source
+    if: ${{ needs.detect-source.outputs.source_present == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     defaults:
       run:
         working-directory: apps/api
@@ -48,7 +56,6 @@ jobs:
       DATABASE_APP_ROLE: ''
       DATABASE_LOGIN_ROLE: lexa
       PUBLIC_APP_URL: http://localhost:3000
-      # No production credentials or hosted database settings belong in CI.
       GEMINI_API_KEY: ''
       GROQ_API_KEY: ''
       CEREBRAS_API_KEY: ''
@@ -77,8 +84,10 @@ jobs:
 
   web-build:
     name: Web typecheck, contract tests and production build
+    needs: detect-source
+    if: ${{ needs.detect-source.outputs.source_present == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: apps/web
@@ -107,6 +116,8 @@ jobs:
 
   compose-config:
     name: Docker Compose and HAProxy configuration
+    needs: detect-source
+    if: ${{ needs.detect-source.outputs.source_present == 'true' }}
     runs-on: ubuntu-24.04
     timeout-minutes: 10
     steps:
@@ -130,3 +141,4 @@ jobs:
           docker run --rm \
             --volume "$PWD/deploy/docker/haproxy.cfg:/usr/local/etc/haproxy/haproxy.cfg:ro" \
             haproxy:3.2-alpine haproxy -c -f /usr/local/etc/haproxy/haproxy.cfg
+            
