@@ -1,0 +1,1307 @@
+/*
+ * LEXA Brand Authority — shared visual system
+ * Governed by the supplied master LEXA wordmark: Sales · Inventory · Business Management.
+ * Loaded after globals.css so every route inherits one coherent, accessible identity.
+ */
+:root {
+  --lexa-midnight: #010D27;
+  --lexa-navy: #010D27;
+  --lexa-navy-soft: #0A1B3A;
+  --lexa-blue: #075FE8;
+  --lexa-cyan: #01B9BB;
+  --lexa-green: #00B77D;
+  --lexa-green-deep: #087F5B;
+  --lexa-gold: #E1C140;
+  --lexa-red: #E91D3A;
+  --lexa-ink: #17243B;
+  --lexa-muted: #65758B;
+  --lexa-border: #DFE7F0;
+  --lexa-canvas: #F5F8FC;
+  --lexa-surface: #FFFFFF;
+  --lexa-shadow-card: 0 7px 24px rgba(1, 13, 39, .055);
+  --lexa-shadow-raised: 0 16px 42px rgba(1, 13, 39, .11);
+  color: var(--lexa-ink);
+  background: var(--lexa-canvas);
+}
+
+html { background: var(--lexa-canvas); }
+body { color: var(--lexa-ink); background: var(--lexa-canvas); }
+::selection { color: #FFFFFF; background: rgba(7, 95, 232, .84); }
+
+/* Application identity: use the master wordmark crop, never the retired checkmark brand. */
+.app-sidebar {
+  color: #E8EEF8;
+  background: linear-gradient(180deg, #010D27 0%, #04142F 72%, #071C35 100%);
+  border-right: 1px solid rgba(255,255,255,.075);
+}
+.app-brand {
+  width: 100%;
+  height: 68px;
+  min-height: 68px;
+  flex: 0 0 auto;
+  display: block;
+  padding: 0;
+  margin: 0 0 15px;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--lexa-midnight);
+  background-image: url('/lexa-wordmark-master.jpg');
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: min(100%, 232px) auto;
+}
+.app-brand .app-brand-logo,
+.app-brand > div { display: none !important; }
+.app-brand:focus-visible { outline: 3px solid var(--lexa-gold); outline-offset: 4px; }
+
+.workspace-switch {
+  color: #F4F7FC;
+  border: 1px solid rgba(255,255,255,.13);
+  border-radius: 13px;
+  background: rgba(255,255,255,.045);
+  transition: border-color .18s ease, background .18s ease;
+}
+.workspace-switch small { color: #B3C0D3; letter-spacing: .12em; }
+.workspace-switch:hover { border-color: rgba(1,185,187,.52); background: rgba(255,255,255,.075); }
+.app-nav { gap: 4px; }
+.app-nav-item {
+  min-height: 44px;
+  border-radius: 10px;
+  transition: background .16s ease, color .16s ease, box-shadow .16s ease;
+}
+.app-nav-item:hover:not(.active) { color: #FFFFFF; background: rgba(255,255,255,.075); }
+.app-nav-item.active {
+  color: #FFFFFF;
+  background: linear-gradient(105deg, rgba(1,185,187,.22), rgba(0,183,125,.17));
+  box-shadow: inset 3px 0 0 var(--lexa-cyan), 0 5px 14px rgba(0,0,0,.08);
+}
+.app-nav-item.active .app-nav-icon { color: #72E7D7; }
+.sidebar-more-toggle { border-radius: 10px; }
+.sidebar-more-toggle:hover { background: rgba(255,255,255,.075); }
+.nav-divider { border-color: rgba(255,255,255,.11); }
+.sidebar-foot { color: #B7C5D9; border-color: rgba(255,255,255,.10); }
+.status-dot:not(.warning) { background: var(--lexa-green); }
+.status-dot.warning { background: var(--lexa-gold); }
+
+.app-main { min-width: 0; background: transparent; }
+.app-topbar {
+  background: rgba(255,255,255,.94);
+  border-bottom: 1px solid rgba(223,231,240,.94);
+  box-shadow: 0 2px 12px rgba(1,13,39,.025);
+  backdrop-filter: blur(16px);
+}
+.app-content {
+  width: 100%;
+  max-width: 1660px;
+  margin-inline: auto;
+  color: var(--lexa-ink);
+}
+.standard-page-header h1,
+.workspace-header h1,
+.customer-toolbar h2 {
+  color: var(--lexa-midnight);
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+.standard-page-header .page-eyebrow,
+.workspace-breadcrumb,
+.page-eyebrow { color: var(--lexa-green-deep); }
+.standard-page-context { border-radius: 999px; }
+
+/* One coherent surface language across dashboard, sales, products, inventory, purchasing,
+   accounting, reporting, intelligence, administration, documents, compliance and settings. */
+.app-content .panel,
+.app-content .command-panel,
+.app-content .workspace-section,
+.app-content .workspace-card,
+.app-content .module-card {
+  border-color: var(--lexa-border);
+  box-shadow: var(--lexa-shadow-card);
+}
+.app-content .panel,
+.app-content .command-panel,
+.app-content .workspace-section { border-radius: 17px; }
+.app-content .panel-head h2,
+.app-content .section-head h2,
+.app-content .workspace-section h2 { color: var(--lexa-navy); letter-spacing: -.026em; text-wrap: balance; }
+.app-content .panel-subtitle,
+.app-content .workspace-section p { line-height: 1.62; }
+.app-content .panel:hover,
+.app-content .command-panel:hover,
+.app-content .workspace-section:hover {
+  border-color: #C9E5DA;
+  box-shadow: var(--lexa-shadow-raised);
+}
+
+/* Dashboard hierarchy: generous spacing and restrained brand colours around real figures. */
+.command-toolbar {
+  gap: 14px;
+  border: 1px solid var(--lexa-border);
+  border-radius: 17px;
+  background: rgba(255,255,255,.94);
+  box-shadow: var(--lexa-shadow-card);
+}
+.command-toolbar > div:first-child strong { color: var(--lexa-navy); letter-spacing: -.02em; }
+.command-toolbar > div:first-child span { line-height: 1.62; }
+.command-kpis { gap: 13px; }
+.command-kpi {
+  min-width: 0;
+  border: 1px solid #DCE7E7;
+  border-radius: 17px;
+  box-shadow: var(--lexa-shadow-card);
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease;
+}
+.command-kpi strong { color: var(--lexa-navy); font-variant-numeric: tabular-nums; letter-spacing: -.045em; }
+.command-kpi small { line-height: 1.5; }
+.command-kpi:nth-child(1) { background: linear-gradient(145deg, #FFFFFF 54%, #E7F8F0); }
+.command-kpi:nth-child(2) { background: linear-gradient(145deg, #FFFFFF 54%, #E8F8F7); }
+.command-kpi:nth-child(3) { background: linear-gradient(145deg, #FFFFFF 54%, #EEF2FF); }
+.command-kpi:nth-child(4) { background: linear-gradient(145deg, #FFFFFF 54%, #FFF9E8); }
+.command-kpi:hover { transform: translateY(-2px); border-color: #B8E2D2; box-shadow: var(--lexa-shadow-raised); }
+.command-kpi:nth-child(1) .command-kpi-icon { color: var(--lexa-green-deep) !important; }
+.command-kpi:nth-child(2) .command-kpi-icon { color: #087F91 !important; }
+.command-kpi:nth-child(3) .command-kpi-icon { color: var(--lexa-blue) !important; }
+.command-kpi:nth-child(4) .command-kpi-icon { color: #946E00 !important; }
+.finance-overview-card,
+.work-card,
+.quick-links a,
+.top-product-row {
+  border-radius: 14px;
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease;
+}
+.finance-overview-card:hover,
+.work-card:hover,
+.quick-links a:hover { border-color: #B8E2D2; box-shadow: 0 9px 24px rgba(1,13,39,.07); }
+
+/* Actions use a single accessible primary treatment rather than competing rainbow buttons. */
+.button-dark,
+.primary,
+.auth-submit {
+  color: #FFFFFF;
+  border-color: #087F5B;
+  background: linear-gradient(105deg, #087F5B, #00A979 68%, #01AEB0);
+  box-shadow: 0 6px 17px rgba(0,143,103,.17);
+}
+.button-dark:hover:not(:disabled),
+.primary:hover:not(:disabled),
+.auth-submit:hover:not(:disabled) {
+  filter: saturate(1.04);
+  box-shadow: 0 9px 22px rgba(0,143,103,.23);
+}
+.button-soft,
+.secondary {
+  color: var(--lexa-navy);
+  border-color: #D9E3ED;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(1,13,39,.025);
+  transition: background .16s ease, border-color .16s ease, box-shadow .16s ease;
+}
+.button-soft:hover:not(:disabled),
+.secondary:hover:not(:disabled) { color: var(--lexa-green-deep); border-color: #A7D8C5; background: #F5FCF8; }
+.button-danger,
+.button-danger-soft { border-color: #F1C9D0; }
+.period-button.active,
+.period-button[aria-pressed="true"] { color: #086345; border-color: #16A777; background: #E8F8F0; }
+
+/* Data tables and record lists: tidy headers, predictable borders, readable hover state. */
+.table-wrap {
+  max-width: 100%;
+  border: 1px solid var(--lexa-border);
+  border-radius: 14px;
+  background: #FFFFFF;
+}
+.data-table th { color: #50647A; background: #F3F8F7; font-size: 11px; font-weight: 800; }
+.data-table td { border-color: #E9EEF4; overflow-wrap: anywhere; }
+.data-table td a { color: #086C50; text-underline-offset: 3px; }
+.data-table td a:hover { text-decoration: underline; }
+.data-table tbody tr { transition: background .12s ease; }
+.data-table tbody tr:hover { background: #F5FBF8; }
+.empty-state, .empty-inline, .chart-empty-state, .data-state { overflow-wrap: anywhere; }
+.notice, .inline-message, .status-banner { border-radius: 13px; overflow-wrap: anywhere; }
+
+/* Sign-in, registration, password recovery and reset: the full master art is the authority. */
+.auth-story {
+  color: #F6F8FC;
+  background: radial-gradient(ellipse at 12% 8%, rgba(1,185,187,.17), transparent 38%),
+    radial-gradient(ellipse at 90% 90%, rgba(7,95,232,.18), transparent 40%), #010D27;
+}
+.auth-story-brand {
+  display: block;
+  flex: 0 0 auto;
+  width: min(100%, 460px);
+  height: auto;
+  aspect-ratio: 2 / 1;
+  overflow: hidden;
+  border-radius: 8px;
+  background-color: var(--lexa-midnight);
+  background-image: url('/lexa-master-logo.jpg');
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+}
+.auth-story-brand .auth-story-logo,
+.auth-story-brand > div { display: none !important; }
+.auth-story-kicker { color: #F2D779; }
+.auth-story-foot { color: #C7D2E6; }
+.auth-panel { background: var(--lexa-canvas); }
+.auth-card {
+  border-color: var(--lexa-border);
+  border-radius: 22px;
+  box-shadow: 0 22px 64px rgba(1,13,39,.085);
+}
+.auth-card-heading h2 { color: var(--lexa-navy); letter-spacing: -.035em; }
+.section-label { color: var(--lexa-green-deep); }
+.auth-stepper [aria-current="step"],
+.auth-stepper .active { border-color: var(--lexa-green); }
+.auth-form-v2 input:focus-visible,
+.auth-form-v2 select:focus-visible,
+.auth-form-v2 textarea:focus-visible { border-color: var(--lexa-cyan); }
+
+/* Brand legacy assets are redirected to image-derived official derivatives. */
+/* Keyboard focus uses a clear high-contrast ring; colour alone never carries status. */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline-color: rgba(1,185,187,.92);
+}
+.app-nav-item:focus-visible,
+.sidebar-more-toggle:focus-visible,
+.sidebar-signout:focus-visible,
+.workspace-switch:focus-visible,
+.mobile-nav a:focus-visible,
+.mobile-nav button:focus-visible { outline-color: var(--lexa-gold); }
+
+@media (max-width: 1100px) {
+  .app-content { padding-inline: clamp(16px, 2.2vw, 24px); }
+  .app-brand { background-size: min(100%, 218px) auto; }
+}
+@media (max-width: 800px) {
+  .app-brand { height: 60px; min-height: 60px; margin-bottom: 10px; background-size: min(100%, 214px) auto; }
+  .command-toolbar { align-items: stretch; }
+  .command-kpi { padding: 16px; }
+  .auth-story { min-height: auto; gap: 22px; padding: 28px; }
+  .auth-story-brand { width: min(100%, 340px); }
+  .auth-story-copy h1 { text-wrap: balance; }
+}
+@media (max-width: 520px) {
+  .app-content { padding-inline: 13px; }
+  .app-brand { height: 54px; min-height: 54px; background-size: min(100%, 200px) auto; }
+  .app-content .panel,
+  .app-content .command-panel,
+  .app-content .workspace-section { border-radius: 14px; }
+  .command-toolbar { padding: 14px; border-radius: 14px; }
+  .command-toolbar .toolbar-actions { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .command-toolbar .toolbar-actions > * { width: 100%; justify-content: center; }
+  .command-kpis { grid-template-columns: minmax(0, 1fr); }
+  .auth-story { padding: 22px 18px; }
+  .auth-story-brand { width: min(100%, 300px); }
+  .auth-card { border-radius: 17px; }
+  .table-wrap { border-radius: 12px; }
+}
+@media (max-height: 760px) and (min-width: 801px) {
+  .auth-story-brand { width: min(100%, 330px); }
+  .auth-story { gap: 24px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-nav-item, .workspace-switch, .command-kpi, .finance-overview-card,
+  .work-card, .quick-links a, .button-soft, .secondary, .data-table tbody tr {
+    transition: none !important;
+  }
+  .command-kpi:hover, .finance-overview-card:hover, .work-card:hover,
+  .quick-links a:hover { transform: none; }
+}
+
+
+/* ============================================================================
+   LEXA MASTER BRAND SYSTEM — full product-wide implementation
+   Master reference: the supplied multicolour LEXA wordmark and gold descriptor.
+   Brand: midnight navy structure; blue/cyan interactions; green success; gold emphasis;
+   red critical alerts. The logo itself remains the only intentionally multicolour lockup.
+   ============================================================================ */
+:root {
+  --navy: #010D27;
+  --navy-2: #0A1B3A;
+  --blue: #075FE8;
+  --cyan: #01B9BB;
+  --emerald: #00B77D;
+  --emerald-dark: #087F5B;
+  --gold: #E1C140;
+  --red: #E91D3A;
+  --ink: #17243B;
+  --muted: #65758B;
+  --line: #DFE7F0;
+  --paper: #FFFFFF;
+  --soft: #F5F8FC;
+  --soft-blue: #EEF4FF;
+  --lexa-midnight: #010D27;
+  --lexa-navy: #010D27;
+  --lexa-navy-soft: #0A1B3A;
+  --lexa-blue: #075FE8;
+  --lexa-cyan: #01B9BB;
+  --lexa-green: #00B77D;
+  --lexa-green-deep: #087F5B;
+  --lexa-gold: #E1C140;
+  --lexa-red: #E91D3A;
+  --lexa-ink: #17243B;
+  --lexa-muted: #65758B;
+  --lexa-border: #DFE7F0;
+  --lexa-canvas: #F5F8FC;
+  --lexa-surface: #FFFFFF;
+  --lexa-shadow-card: 0 7px 24px rgba(1,13,39,.055);
+  --lexa-shadow-raised: 0 16px 42px rgba(1,13,39,.105);
+  --border: var(--lexa-border);
+  --surface: var(--lexa-surface);
+  --foreground: var(--lexa-ink);
+  --background: var(--lexa-canvas);
+  --focus-ring: 3px solid var(--lexa-blue);
+}
+html { background: var(--lexa-canvas); }
+body { background: var(--lexa-canvas); color: var(--lexa-ink); }
+::selection { color:#fff; background:rgba(7,95,232,.88); }
+
+/* Desktop application frame and brand signature. */
+.app-shell {
+  background:
+    radial-gradient(ellipse at 82% -12%, rgba(1,185,187,.075), transparent 33%),
+    var(--lexa-canvas);
+}
+.app-sidebar {
+  background: linear-gradient(180deg,#010D27 0%,#051735 67%,#081B36 100%);
+  border-right:1px solid rgba(255,255,255,.075);
+  color:#EAF0FA;
+}
+.app-brand {
+  height:68px;
+  min-height:68px;
+  margin:0 0 16px;
+  padding:0;
+  display:block;
+  overflow:hidden;
+  border-radius:9px;
+  background-color:var(--lexa-midnight);
+  background-image:url('/lexa-wordmark-master.jpg');
+  background-repeat:no-repeat;
+  background-position:center;
+  background-size:100% auto;
+}
+.app-brand .app-brand-logo,.app-brand > div { display:none !important; }
+.app-brand:focus-visible { outline:3px solid var(--lexa-gold); outline-offset:3px; }
+.workspace-switch {
+  border:1px solid rgba(255,255,255,.13);
+  border-radius:12px;
+  background:rgba(255,255,255,.045);
+  color:#F6F8FC;
+  transition:border-color .16s ease,background .16s ease;
+}
+.workspace-switch small { color:#B8C5D8; letter-spacing:.11em; }
+.workspace-switch:hover { border-color:rgba(1,185,187,.55); background:rgba(255,255,255,.075); }
+.app-nav { gap:4px; }
+.app-nav-item {
+  min-height:44px;
+  margin-inline:3px;
+  width:calc(100% - 6px);
+  border-radius:10px;
+  transition:background .16s ease,color .16s ease,box-shadow .16s ease;
+}
+.app-nav-item:hover:not(.active) { color:#fff; background:rgba(255,255,255,.075); }
+.app-nav-item.active {
+  color:#fff;
+  background:linear-gradient(105deg,rgba(7,95,232,.28),rgba(1,185,187,.15));
+  box-shadow:inset 3px 0 0 var(--lexa-gold),0 5px 14px rgba(0,0,0,.09);
+}
+.app-nav-item.active .app-nav-icon { color:#78E5E2; }
+.sidebar-more-toggle { border-radius:10px; }
+.sidebar-more-toggle:hover { background:rgba(255,255,255,.075); }
+.nav-divider { border-color:rgba(255,255,255,.12); }
+.sidebar-foot { color:#B8C5D8; border-color:rgba(255,255,255,.11); }
+.status-dot:not(.warning) { background:var(--lexa-green); }
+.status-dot.warning { background:var(--lexa-gold); }
+.app-main { min-width:0; background:transparent; }
+.app-topbar {
+  background:rgba(255,255,255,.94);
+  border-bottom:1px solid rgba(223,231,240,.94);
+  box-shadow:0 2px 12px rgba(1,13,39,.025);
+  backdrop-filter:blur(16px);
+}
+.app-topbar::before { content:none; }
+.app-content { width:100%; max-width:1660px; margin-inline:auto; color:var(--lexa-ink); }
+.standard-page-header h1,.workspace-header h1,.customer-toolbar h2 {
+  color:var(--lexa-navy); letter-spacing:-.045em; text-wrap:balance;
+}
+.standard-page-header .page-eyebrow,.workspace-breadcrumb,.page-eyebrow { color:#075FE8; }
+.page-eyebrow { letter-spacing:.13em; }
+.standard-page-context { border-radius:999px; }
+
+/* A single component contract for all business workspaces. */
+.app-content .panel,.app-content .command-panel,.app-content .workspace-section,
+.app-content .workspace-card,.app-content .module-card {
+  min-width:0; border-color:var(--lexa-border); box-shadow:var(--lexa-shadow-card);
+}
+.app-content .panel,.app-content .command-panel,.app-content .workspace-section { border-radius:17px; }
+.app-content .panel-head h2,.app-content .section-head h2,.app-content .workspace-section h2 {
+  color:var(--lexa-navy); letter-spacing:-.026em; text-wrap:balance;
+}
+.app-content .panel-subtitle,.app-content .workspace-section p { line-height:1.62; }
+.app-content .panel:hover,.app-content .command-panel:hover,.app-content .workspace-section:hover {
+  border-color:#CFDDEA; box-shadow:var(--lexa-shadow-raised);
+}
+.workspace-header { gap:12px 20px; }
+.workspace-header h1 { font-size:clamp(26px,2.45vw,35px); line-height:1.13; }
+.workspace-header p { max-width:72ch; line-height:1.62; }
+.section-head h2 { line-height:1.28; }
+.section-head p { line-height:1.62; }
+.workspace-section { overflow-wrap:anywhere; }
+
+/* Primary actions are consistent blue; green remains a positive-result colour. */
+.button-dark,.primary,.auth-submit {
+  color:#fff;
+  border-color:#075FE8;
+  background:#075FE8;
+  box-shadow:0 5px 14px rgba(7,95,232,.16);
+  transition:background .16s ease,border-color .16s ease,box-shadow .16s ease,transform .16s ease;
+}
+.button-dark:hover:not(:disabled),.primary:hover:not(:disabled),.auth-submit:hover:not(:disabled) {
+  background:#064FC4; border-color:#064FC4; box-shadow:0 8px 19px rgba(7,95,232,.21);
+}
+.button-soft,.secondary {
+  color:#14294B; border-color:#D5E0ED; background:#fff;
+  box-shadow:0 2px 8px rgba(1,13,39,.025);
+  transition:background .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease;
+}
+.button-soft:hover:not(:disabled),.secondary:hover:not(:disabled) {
+  color:#0753C8; border-color:#A7C4ED; background:#F4F8FF;
+}
+.button-danger,.button-danger-soft { color:#A81D32; border-color:#F0C7CE; background:#FFF8F9; }
+.button:disabled,.primary:disabled,.secondary:disabled { cursor:not-allowed; }
+.period-button.active,.period-button[aria-pressed="true"] {
+  color:#064FC4; border-color:#075FE8; background:#EAF2FF; box-shadow:inset 0 0 0 1px rgba(7,95,232,.08);
+}
+.report-period-presets .button[aria-pressed="true"] { border-color:var(--lexa-blue); background:#EAF2FF; color:#064FC4; }
+
+/* Dashboard hierarchy: headline metrics first, explanatory panels second. */
+.command-toolbar {
+  gap:14px; border:1px solid var(--lexa-border); border-radius:17px;
+  background:rgba(255,255,255,.96); box-shadow:var(--lexa-shadow-card);
+}
+.command-toolbar > div:first-child strong { color:var(--lexa-navy); letter-spacing:-.02em; }
+.command-toolbar > div:first-child span { line-height:1.62; }
+.command-kpis { gap:13px; }
+.command-kpi {
+  min-width:0; padding:19px; border:1px solid #DCE5EF; border-radius:17px;
+  box-shadow:var(--lexa-shadow-card);
+  transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;
+}
+.command-kpi strong { color:var(--lexa-navy); font-variant-numeric:tabular-nums; letter-spacing:-.045em; }
+.command-kpi small { color:#5F7188; line-height:1.5; }
+.command-kpi:nth-child(1) { background:linear-gradient(145deg,#fff 60%,#EEF4FF); }
+.command-kpi:nth-child(2) { background:linear-gradient(145deg,#fff 60%,#EAF9FA); }
+.command-kpi:nth-child(3) { background:linear-gradient(145deg,#fff 60%,#F0F3FF); }
+.command-kpi:nth-child(4) { background:linear-gradient(145deg,#fff 60%,#FFF8E5); }
+.command-kpi:hover { transform:translateY(-2px); border-color:#BFD0E7; box-shadow:var(--lexa-shadow-raised); }
+.command-kpi:nth-child(1) .command-kpi-icon { color:#075FE8 !important; border-color:rgba(7,95,232,.2); }
+.command-kpi:nth-child(2) .command-kpi-icon { color:#087F91 !important; border-color:rgba(1,185,187,.25); }
+.command-kpi:nth-child(3) .command-kpi-icon { color:#3C56C4 !important; border-color:rgba(7,95,232,.2); }
+.command-kpi:nth-child(4) .command-kpi-icon { color:#8C6A08 !important; border-color:rgba(225,193,64,.45); }
+.command-kpi-label { letter-spacing:0; line-height:1.45; }
+.home-status-row { gap:10px; flex-wrap:wrap; }
+.home-status-meta { color:#65758B; font-variant-numeric:tabular-nums; }
+.finance-overview-card,.work-card,.quick-links a,.top-product-row {
+  min-width:0; border-radius:14px;
+  transition:border-color .16s ease,box-shadow .16s ease,background .16s ease,transform .16s ease;
+}
+.finance-overview-card:hover,.work-card:hover,.quick-links a:hover {
+  border-color:#BFD0E7; box-shadow:0 9px 24px rgba(1,13,39,.07);
+}
+.finance-overview-icon { color:var(--lexa-blue); }
+.panel-link,.report-record-link { color:#0753C8; text-underline-offset:3px; }
+.panel-link:hover,.report-record-link:hover { text-decoration:underline; }
+.phase4-analytics-grid { align-items:stretch; gap:16px; }
+.phase4-analytics-grid > *, .phase4-operations-grid > *, .phase4-lower-grid > * { min-width:0; }
+.phase4-operations-grid,.phase4-lower-grid { gap:16px; }
+.trend-panel,.top-products-panel { display:flex; flex-direction:column; min-width:0; }
+.trend-panel .trend-chart-wrap { flex:1; }
+.top-product-value { font-variant-numeric:tabular-nums; }
+.product-bar-track { background:#E7ECF4; border-radius:999px; overflow:hidden; }
+.product-bar-track span { display:block; min-height:6px; border-radius:inherit; background:linear-gradient(90deg,#075FE8,#087F91); }
+.top-product-rank { background:#EFF4FC; color:#173B75; border:1px solid #DDE7F4; }
+.attention-row { min-width:0; }
+.quick-links a { border-color:#E0E7F0; }
+.quick-links a:hover { background:#F5F8FE; }
+.data-confidence-list { gap:12px; }
+.confidence-icon { color:#087F5B; background:#E7F8F0; }
+
+/* Line charts: clear labels, calm gridlines, two consistent semantic series. */
+.trend-chart-wrap { min-width:0; padding:12px 0 2px; }
+.chart-summary-row {
+  display:flex; align-items:center; flex-wrap:wrap; gap:9px 16px;
+  padding:0 2px 10px; color:#40536E; font-size:12px;
+}
+.chart-summary-row > span { display:inline-flex; align-items:center; gap:7px; font-weight:700; }
+.chart-summary-row small { margin-left:auto; color:#67778D; font-size:11px; }
+.chart-legend-dot { width:9px; height:9px; border-radius:3px; box-shadow:0 0 0 3px rgba(7,95,232,.07); }
+.legend-sales { background:#075FE8; }
+.legend-collected { background:#087F91; box-shadow:0 0 0 3px rgba(1,185,187,.1); }
+.sales-trend-svg {
+  display:block; width:100%; height:auto; min-height:210px; overflow:visible;
+  border-radius:13px; background:linear-gradient(180deg,#FFFFFF 0%,#FBFCFF 100%);
+}
+.chart-grid-line { stroke:#E7EDF5; stroke-width:1; vector-effect:non-scaling-stroke; }
+.chart-grid-vertical { stroke-dasharray:2 5; opacity:.72; }
+.chart-axis-label { fill:#61728A; font-size:11px; }
+.chart-series-line { fill:none; stroke-width:3; stroke-linecap:round; stroke-linejoin:round; vector-effect:non-scaling-stroke; }
+.chart-series-sales { stroke:#075FE8; }
+.chart-series-collected { stroke:#087F91; stroke-dasharray:7 5; }
+.chart-series-dot { stroke:#FFFFFF; stroke-width:2; vector-effect:non-scaling-stroke; }
+.chart-series-sales-dot { fill:#075FE8; }
+.chart-series-collected-dot { fill:#087F91; }
+.chart-data-details { margin-top:9px; border-top:1px solid #E8EDF4; padding-top:10px; }
+.chart-data-details summary { display:inline-flex; align-items:center; min-height:42px; padding:0 8px; color:#0753C8; font-size:12px; font-weight:750; cursor:pointer; }
+.chart-data-table-wrap { max-width:100%; overflow:auto; border:1px solid #E1E8F0; border-radius:12px; }
+.chart-data-table { min-width:580px; }
+
+/* Horizontal comparisons: same label/track/value rhythm across reports. */
+.product-comparison-bars { display:grid; gap:14px; padding:17px 20px; }
+.product-comparison-row { display:grid; grid-template-columns:minmax(115px,.95fr) minmax(80px,1.5fr) minmax(78px,auto); gap:12px; align-items:center; }
+.product-comparison-label { min-width:0; }
+.product-comparison-label strong,.product-comparison-label a { overflow-wrap:anywhere; }
+.product-comparison-label small { display:block; margin-top:3px; color:#718099; font-size:10px; line-height:1.45; }
+.product-comparison-value { color:#152A4B; font-size:12px; font-variant-numeric:tabular-nums; text-align:right; overflow-wrap:anywhere; }
+.product-comparison-track { height:9px; min-width:0; overflow:hidden; border-radius:999px; background:#E8EDF5; }
+.product-comparison-track span { display:block; height:100%; min-width:0; border-radius:inherit; background:#075FE8; }
+.product-comparison-track:not(.expense-comparison-track):not(.payment-method-track):not(.stock-value-track):not(.customer-balance-track) span { background:linear-gradient(90deg,#075FE8,#087F91); }
+.expense-comparison-track { background:#F8EBD0; }
+.expense-comparison-track span { background:#C58C13; }
+.payment-method-track { background:#DDF5F4; }
+.payment-method-track span { background:#087F91; }
+.stock-value-track { background:#DDF4EA; }
+.stock-value-track span { background:#00A875; }
+.customer-balance-track { background:#FBE9D8; }
+.customer-balance-track span { background:#C58C13; }
+.branch-performance-track span { background:#075FE8; }
+.chart-empty-state { min-height:140px; display:grid; align-content:center; justify-items:start; gap:8px; padding:20px; border:1px dashed #CBD7E6; border-radius:14px; background:#FBFCFF; color:#64758B; line-height:1.6; }
+.chart-empty-state strong { color:#173052; font-size:13px; }
+.chart-empty-mark { color:#075FE8; font-size:23px; }
+
+/* Data tables support search, comparisons, row actions, and small screens. */
+.table-wrap,.workspace .table-wrap {
+  width:100%; max-width:100%; min-width:0; overflow-x:auto; overscroll-behavior-x:contain;
+  border:1px solid var(--lexa-border); border-radius:14px; background:#fff;
+}
+.data-table { border-collapse:separate; border-spacing:0; }
+.data-table th {
+  color:#4E6078; background:#F1F5FB; font-size:11px; font-weight:800;
+  letter-spacing:.015em; border-color:#E0E7F0;
+}
+.data-table td { color:#25364E; border-color:#E8EDF4; overflow-wrap:anywhere; }
+.data-table tbody tr { transition:background .12s ease; }
+.data-table tbody tr:hover { background:#F5F8FE; }
+.data-table td a { color:#0753C8; text-decoration-thickness:1px; text-underline-offset:3px; }
+.data-table td a:hover { color:#043B99; text-decoration:underline; }
+.workspace .table-wrap table { width:max-content; min-width:100%; }
+.filter-row,.form-grid,.command-form { gap:13px; }
+.command-form label,.form-grid label,.filter-row label { min-width:0; line-height:1.45; }
+.command-form input,.command-form select,.command-form textarea,
+.form-grid input,.form-grid select,.form-grid textarea,
+.filter-row input,.filter-row select,.table-search input,
+.workspace input,.workspace select,.workspace textarea {
+  min-width:0; max-width:100%; border-color:#CBD7E6; border-radius:10px;
+}
+input:focus-visible,select:focus-visible,textarea:focus-visible {
+  outline:3px solid rgba(7,95,232,.22); outline-offset:1px; border-color:#075FE8;
+}
+.notice,.inline-message,.status-banner { border-radius:12px; overflow-wrap:anywhere; }
+.notice-info { border-color:#C7D9F4; background:#F0F6FF; color:#173C70; }
+.status-banner-success { border-color:#BCE5D2; background:#F0FBF5; color:#135F47; }
+.status-banner-warning { border-color:#F0DDA7; background:#FFFBEE; color:#775A11; }
+.status-banner-error { border-color:#F0C5CC; background:#FFF5F6; color:#9D2334; }
+.status,.lexa-badge { font-variant-numeric:tabular-nums; }
+
+/* Module CSS follows the same brand: assistant, documents, briefing and forecast. */
+.app-content [class*="privacyBar__"],.app-content [class*="chatShell__"] {
+  border-color:var(--lexa-border); border-radius:17px; box-shadow:var(--lexa-shadow-card); background:#fff;
+}
+.app-content [class*="privacyIcon__"],.app-content [class*="welcomeMark__"] {
+  background:#EAF2FF; color:#075FE8;
+}
+.app-content [class*="suggestion__"] {
+  border-color:#DFE7F0; border-radius:12px; background:#fff; color:#1D304C;
+}
+.app-content [class*="suggestion__"]:hover { border-color:#9EBDE8; background:#F4F8FF; }
+.app-content [class*="suggestion__"] span { color:#075FE8; }
+.app-content [class*="messages__"] { background:#F5F8FC; }
+.app-content [class*="userMessage__"] { background:#EAF2FF; border-color:#C8D9F4; }
+.app-content [class*="assistantMessage__"] { background:#fff; border-color:#DFE7F0; }
+.app-content [class*="messageLabel__"] { color:#31537F; }
+.app-content [class*="markdown__"] h4,.app-content [class*="markdown__"] strong { color:#173052; }
+.app-content [class*="composer__"] { border-color:#DFE7F0; }
+.app-content [class*="composer__"] textarea:focus { border-color:#075FE8; box-shadow:0 0 0 3px rgba(7,95,232,.13); }
+.app-content [class*="quickLinks__"] a { color:#0753C8; }
+.app-content [class*="summary__"],.app-content [class*="summaryHead__"],
+.app-content [class*="summaryStats__"],.app-content [class*="card__"],
+.app-content [class*="item__"],.app-content [class*="count__"],.app-content [class*="method__"] {
+  border-color:var(--lexa-border);
+}
+.app-content [class*="summary__"],.app-content [class*="card__"],.app-content [class*="item__"],
+.app-content [class*="method__"] { border-radius:15px; box-shadow:var(--lexa-shadow-card); }
+.app-content [class*="count__"],.app-content [class*="summaryStats__"] > div,
+.app-content [class*="metrics__"] > div,.app-content [class*="metric__"] {
+  background:#F2F6FC; border-color:#DFE7F0;
+}
+.app-content [class*="summary__"] h2,.app-content [class*="summaryHead__"] h2,
+.app-content [class*="cardHead__"] h3 { color:var(--lexa-navy); }
+.app-content [class*="notice__"] { border-color:#E9D9AB; background:#FFFBEE; color:#705510; }
+.app-content [class*="documentList__"],.app-content [class*="documentDetail__"] {
+  border-color:var(--lexa-border); border-radius:15px; box-shadow:var(--lexa-shadow-card);
+}
+.app-content [class*="documentItem__"] { border-color:#E8EDF4; }
+.app-content [class*="documentItemActive__"],.app-content [class*="documentItem__"]:hover { background:#EFF5FF; }
+.app-content [class*="documentGlyph__"] { color:#075FE8; background:#EAF2FF; }
+.app-content [class*="extractionNotice__"] { border-color:#C9DDF8; background:#F3F7FF; }
+.app-content [class*="field__"] input:focus,.app-content [class*="field__"] select:focus { border-color:#075FE8; outline-color:rgba(7,95,232,.19); }
+
+/* Brand-safe global states: labels never depend on colour alone. */
+.status.good,.status-success,.lexa-badge-success { color:#086448; background:#E6F7EF; border-color:#B8E6D1; }
+.status.warn,.status-warning,.lexa-badge-warning { color:#75570C; background:#FFF8E2; border-color:#EAD79D; }
+.status.danger,.status-error,.lexa-badge-danger { color:#A51E33; background:#FFF0F2; border-color:#F1C4CC; }
+.status.info,.status-neutral,.lexa-badge-info { color:#174B99; background:#EEF4FF; border-color:#C9D9F6; }
+.empty-state,.empty-inline,.chart-empty-state,.data-state { overflow-wrap:anywhere; }
+
+/* Touch targets, focus, safe areas and narrow-screen composition. */
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible {
+  outline:3px solid rgba(7,95,232,.86); outline-offset:3px;
+}
+.app-nav-item:focus-visible,.sidebar-more-toggle:focus-visible,.sidebar-signout:focus-visible,
+.workspace-switch:focus-visible,.mobile-nav a:focus-visible,.mobile-nav button:focus-visible {
+  outline-color:var(--lexa-gold); outline-offset:2px;
+}
+.mobile-nav {
+  border-color:#D5DEEB; background:rgba(255,255,255,.96);
+  box-shadow:0 12px 32px rgba(1,13,39,.13); backdrop-filter:blur(18px);
+}
+.mobile-nav a,.mobile-nav button { min-height:46px; border-radius:12px; }
+.mobile-nav a.active,.mobile-nav button.active { color:#0753C8; background:#EAF2FF; }
+.mobile-nav a.active .mobile-nav-icon,.mobile-nav button.active .mobile-nav-icon { color:#075FE8; }
+.app-topbar::before { content:none; }
+@media (max-width: 800px) {
+  .app-content { padding-top:16px; }
+  .app-brand { height:60px; min-height:60px; background-size:100% auto; }
+  .command-toolbar { align-items:stretch; }
+  .command-toolbar .toolbar-actions > * { flex:1 1 145px; }
+  .command-kpi { padding:15px; }
+  .phase4-analytics-grid,.phase4-operations-grid,.phase4-lower-grid { grid-template-columns:minmax(0,1fr); }
+  .phase4-analytics-grid { gap:13px; }
+  .trend-panel,.top-products-panel { min-width:0; }
+  .app-topbar::before {
+    content:"LEXA"; order:1; display:flex; flex:0 0 clamp(70px,21vw,94px); align-items:center;
+    min-width:0; height:28px; padding-left:30px; overflow:hidden;
+    color:var(--lexa-navy); font-size:14px; line-height:1; font-weight:950; letter-spacing:.13em;
+    background-image:url('/lexa-app-mark.png'); background-repeat:no-repeat; background-size:25px 25px; background-position:left center;
+  }
+  .mobile-menu { order:0; }
+  .top-search { order:2; flex:1 1 auto; min-width:60px; }
+  .top-actions { order:3; }
+}
+@media (max-width: 520px) {
+  .app-content { padding-inline:13px; padding-bottom:calc(28px + env(safe-area-inset-bottom)); }
+  .app-brand { height:54px; min-height:54px; background-size:100% auto; }
+  .standard-page-header { gap:10px; margin-bottom:17px; }
+  .standard-page-header h1,.workspace-header h1 { font-size:clamp(24px,7vw,30px); line-height:1.13; }
+  .standard-page-header p,.workspace-header p { font-size:13px; line-height:1.55; }
+  .app-content .panel,.app-content .command-panel,.app-content .workspace-section { border-radius:14px; }
+  .command-toolbar { padding:13px; border-radius:14px; }
+  .command-toolbar .toolbar-actions { display:grid; grid-template-columns:minmax(0,1fr); }
+  .command-toolbar .toolbar-actions > * { width:100%; justify-content:center; }
+  .command-kpis { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+  .command-kpi { min-height:138px; padding:13px 12px; border-radius:14px; }
+  .command-kpi-label { padding-right:30px; font-size:11px !important; }
+  .command-kpi-icon { top:10px; right:10px; width:27px; height:27px; font-size:15px !important; border-radius:9px; }
+  .command-kpi strong { margin-top:7px; font-size:clamp(15px,4.3vw,19px); line-height:1.25; overflow-wrap:anywhere; }
+  .command-kpi small { font-size:10px; line-height:1.42; }
+  .home-status-row { align-items:flex-start; flex-direction:column; gap:6px; }
+  .home-status-meta { font-size:11px; }
+  .finance-overview-grid { grid-template-columns:minmax(0,1fr); }
+  .phase4-analytics-grid,.phase4-operations-grid,.phase4-lower-grid { grid-template-columns:minmax(0,1fr); gap:12px; }
+  .panel-head,.phase4-panel-head { flex-wrap:wrap; align-items:flex-start; gap:12px; }
+  .panel-head > div { min-width:0; }
+  .panel-head h2 { font-size:17px; line-height:1.3; }
+  .chart-summary-row { align-items:flex-start; gap:7px 12px; }
+  .chart-summary-row small { flex:1 1 100%; margin-left:0; }
+  .sales-trend-svg { min-height:155px; }
+  .chart-axis-label { font-size:10px; }
+  .product-comparison-bars { padding:14px; gap:13px; }
+  .product-comparison-row { grid-template-columns:minmax(95px,1fr) minmax(62px,.9fr); gap:8px 10px; }
+  .product-comparison-track { grid-column:1 / -1; grid-row:2; }
+  .product-comparison-value { grid-column:2; grid-row:1; align-self:start; font-size:11px; }
+  .chart-data-table { min-width:560px; }
+  .auth-story { padding:22px 18px; }
+  .auth-story-brand { width:min(100%,300px); }
+  .auth-card { border-radius:17px; }
+  .table-wrap { border-radius:12px; }
+  .workspace-header .header-actions { width:100%; display:grid; grid-template-columns:minmax(0,1fr); }
+  .workspace-header .header-actions > * { width:100%; justify-content:center; }
+  .app-topbar::before { flex-basis:clamp(66px,20vw,82px); font-size:12px; padding-left:27px; background-size:23px 23px; }
+  .top-search { max-width:none; }
+  .mobile-nav { padding-left:7px; padding-right:7px; }
+  .mobile-nav a,.mobile-nav button { min-height:46px; }
+  .mobile-nav small { font-size:9px; }
+  .app-content [class*="suggestionGrid__"] { grid-template-columns:minmax(0,1fr); }
+  .app-content [class*="messages__"] { max-height:min(50dvh,460px); }
+  .app-content [class*="composerFooter__"] { align-items:stretch; flex-direction:column; }
+  .app-content [class*="summaryStats__"] { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .app-content [class*="counts__"] { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 350px) {
+  .command-kpis { grid-template-columns:minmax(0,1fr); }
+  .command-kpi { min-height:118px; }
+  .app-topbar::before { flex-basis:62px; font-size:11px; padding-left:24px; background-size:21px 21px; }
+  .mobile-nav small { font-size:8px; }
+}
+@media (prefers-reduced-motion:reduce) {
+  *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+  .command-kpi:hover,.finance-overview-card:hover,.work-card:hover,.quick-links a:hover { transform:none !important; }
+}
+
+
+/* LEXA LIVE VISIBILITY FIX — verified against the active Vercel CSS
+   Final high-specificity contract: no legacy compact mark pretending to be the master logo.
+   The master artwork anchors the desktop shell and authentication story; the horizontal wordmark
+   is used in the narrow mobile header. Keep business data and interactions readable. */
+:root {
+  --lexa-midnight: #010D27;
+  --lexa-navy: #010D27;
+  --lexa-blue: #075FE8;
+  --lexa-cyan: #01B9BB;
+  --lexa-green: #00B77D;
+  --lexa-gold: #E1C140;
+  --lexa-red: #E91D3A;
+  --lexa-ink: #17243B;
+  --lexa-muted: #65758B;
+  --lexa-border: #DFE7F0;
+  --lexa-canvas: #F5F8FC;
+  --lexa-surface: #FFFFFF;
+}
+
+/* Desktop and open-mobile navigation use the COMPLETE official logo with descriptor. */
+.app-sidebar .app-brand {
+  height: 88px !important;
+  min-height: 88px !important;
+  margin: 0 0 16px !important;
+  padding: 0 !important;
+  border-radius: 10px !important;
+  background-color: #010D27 !important;
+  background-image: url('/lexa-master-logo.jpg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+.app-sidebar .app-brand .app-brand-logo,
+.app-sidebar .app-brand > div { display:none !important; }
+.auth-story .auth-story-brand {
+  aspect-ratio: 2.526 / 1 !important;
+  width: min(100%, 460px) !important;
+  height: auto !important;
+  background-color: #010D27 !important;
+  background-image: url('/lexa-master-logo.jpg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+.auth-story .auth-story-brand .auth-story-logo,
+.auth-story .auth-story-brand > div { display:none !important; }
+
+/* In the phone layout the sidebar is hidden until opened. Put the colourful master wordmark
+   in the persistent header instead of the retired green L/checkmark plus plain text. */
+@media (max-width: 800px) {
+  .app-topbar::before {
+    content: "" !important;
+    order: 1 !important;
+    display: block !important;
+    flex: 0 0 clamp(82px, 25vw, 108px) !important;
+    width: clamp(82px, 25vw, 108px) !important;
+    min-width: 0 !important;
+    height: 29px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    letter-spacing: 0 !important;
+    background-color: transparent !important;
+    background-image: url('/lexa-wordmark-master.jpg') !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+  }
+  .app-topbar .mobile-menu { order: 0 !important; flex: 0 0 38px; }
+  .app-topbar .top-search { order: 2 !important; flex: 1 1 auto; min-width: 60px; }
+  .app-topbar .top-actions { order: 3 !important; min-width: 0; }
+}
+@media (max-width: 520px) {
+  .app-topbar::before {
+    flex-basis: clamp(82px, 25vw, 104px) !important;
+    width: clamp(82px, 25vw, 104px) !important;
+    height: 27px !important;
+    padding: 0 !important;
+    background-size: contain !important;
+  }
+  .app-topbar .top-search { min-width: 52px; }
+  .app-topbar .top-search input { min-width: 0; }
+}
+@media (max-width: 350px) {
+  .app-topbar::before {
+    flex-basis: 78px !important;
+    width: 78px !important;
+    height: 23px !important;
+  }
+}
+
+/* A clear, brand-led dashboard hierarchy: blue/cyan for analysis, gold for emphasis,
+   green for positive states. The values still come from the existing API only. */
+.app-content .command-toolbar {
+  border: 1px solid #DCE5F0 !important;
+  border-radius: 17px !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 8px 26px rgba(1,13,39,.055) !important;
+}
+.app-content .command-kpi {
+  min-width: 0;
+  border: 1px solid #DFE7F0 !important;
+  border-top-width: 3px !important;
+  border-radius: 16px !important;
+  background: #FFFFFF !important;
+  box-shadow: 0 7px 22px rgba(1,13,39,.055) !important;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+.app-content .command-kpi:first-child { border-top-color: #075FE8 !important; background: linear-gradient(145deg,#FFFFFF 60%,#EEF4FF) !important; }
+.app-content .command-kpi:nth-child(2) { border-top-color: #01B9BB !important; background: linear-gradient(145deg,#FFFFFF 60%,#EAF9FA) !important; }
+.app-content .command-kpi:nth-child(3) { border-top-color: #00B77D !important; background: linear-gradient(145deg,#FFFFFF 60%,#ECF9F2) !important; }
+.app-content .command-kpi:nth-child(4) { border-top-color: #E1C140 !important; background: linear-gradient(145deg,#FFFFFF 60%,#FFF9E7) !important; }
+.app-content .command-kpi strong { color: #010D27 !important; font-variant-numeric: tabular-nums; }
+.app-content .command-kpi:hover { transform: translateY(-2px); box-shadow: 0 14px 32px rgba(1,13,39,.10) !important; }
+.app-content .phase4-analytics-grid,.app-content .phase4-operations-grid,.app-content .phase4-lower-grid { gap: 16px; }
+.app-content .trend-panel,.app-content .top-products-panel { overflow: hidden; }
+.app-content .trend-panel { border-top: 3px solid #075FE8 !important; }
+.app-content .top-products-panel { border-top: 3px solid #01B9BB !important; }
+.app-content .trend-chart-wrap { border-radius: 13px; }
+.app-content .chart-summary-row { color: #314760 !important; }
+.app-content .chart-summary-row small { color: #65758B !important; }
+.app-content .sales-trend-svg { min-height: 205px; background: linear-gradient(180deg,#FFFFFF 0%,#FBFCFF 100%) !important; }
+.app-content .chart-grid-line { stroke: #E5ECF5 !important; }
+.app-content .chart-axis-label { fill: #61728A !important; }
+.app-content .chart-series-sales { stroke: #075FE8 !important; }
+.app-content .chart-series-collected { stroke: #087F91 !important; stroke-dasharray: 7 5 !important; }
+.app-content .chart-series-sales-dot { fill: #075FE8 !important; }
+.app-content .chart-series-collected-dot { fill: #087F91 !important; }
+.app-content .product-comparison-track { background: #E9EEF6 !important; }
+.app-content .product-comparison-track:not(.expense-comparison-track):not(.payment-method-track):not(.stock-value-track):not(.customer-balance-track) span { background: linear-gradient(90deg,#075FE8,#01B9BB) !important; }
+.app-content .expense-comparison-track span { background: #C58C13 !important; }
+.app-content .payment-method-track span { background: #087F91 !important; }
+.app-content .stock-value-track span { background: #00A875 !important; }
+.app-content .customer-balance-track span { background: #C58C13 !important; }
+.app-content .chart-data-details summary { color: #0753C8 !important; }
+.app-content .chart-empty-state { border-color: #CFDDEE !important; background: #F8FAFE !important; }
+
+/* Primary action is blue; green stays meaningful for success, completion and healthy operations. */
+.app-shell .button-dark,
+.app-shell .primary,
+.auth-page .auth-submit,
+.auth-page .button-dark {
+  color: #FFFFFF !important;
+  background: #075FE8 !important;
+  border-color: #075FE8 !important;
+  box-shadow: 0 6px 17px rgba(7,95,232,.18) !important;
+}
+.app-shell .button-dark:hover:not(:disabled),
+.app-shell .primary:hover:not(:disabled),
+.auth-page .auth-submit:hover:not(:disabled),
+.auth-page .button-dark:hover:not(:disabled) {
+  background: #064FC4 !important;
+  border-color: #064FC4 !important;
+  box-shadow: 0 9px 22px rgba(7,95,232,.23) !important;
+}
+.app-shell .button-soft,.app-shell .secondary,.auth-page .button-soft {
+  color: #173052 !important;
+  background: #FFFFFF !important;
+  border-color: #D6E1EF !important;
+}
+.app-shell .button-soft:hover:not(:disabled),.app-shell .secondary:hover:not(:disabled),.auth-page .button-soft:hover:not(:disabled) {
+  color: #0753C8 !important;
+  background: #F3F7FF !important;
+  border-color: #AFC6E8 !important;
+}
+.app-shell .app-nav-item.active {
+  color: #FFFFFF !important;
+  background: linear-gradient(105deg,rgba(7,95,232,.28),rgba(1,185,187,.15)) !important;
+  box-shadow: inset 3px 0 0 #E1C140,0 5px 14px rgba(0,0,0,.09) !important;
+}
+.app-shell .app-nav-item.active .app-nav-icon { color: #75E6E2 !important; }
+.app-shell .period-button.active,.app-shell .period-button[aria-pressed="true"] {
+  color: #064FC4 !important; border-color: #075FE8 !important; background: #EAF2FF !important;
+}
+.app-shell .data-table th { color: #40536E !important; background: #F0F5FC !important; border-color: #DFE7F0 !important; }
+.app-shell .data-table tbody tr:hover { background: #F3F7FF !important; }
+.app-shell .data-table td a { color: #0753C8 !important; }
+
+/* Explicit visual contract for specialised CSS-module screens. */
+.app-shell .app-content [class*="privacyBar__"],
+.app-shell .app-content [class*="chatShell__"],
+.app-shell .app-content [class*="documentList__"],
+.app-shell .app-content [class*="documentDetail__"],
+.app-shell .app-content [class*="summary__"],
+.app-shell .app-content [class*="card__"],
+.app-shell .app-content [class*="item__"] {
+  border-color: #DFE7F0 !important;
+  box-shadow: 0 7px 24px rgba(1,13,39,.055) !important;
+}
+.app-shell .app-content [class*="userMessage__"] { background: #EAF2FF !important; border-color: #C8D9F4 !important; }
+.app-shell .app-content [class*="documentItemActive__"],
+.app-shell .app-content [class*="documentItem__"]:hover { background: #EFF5FF !important; }
+.app-shell .app-content [class*="documentGlyph__"],
+.app-shell .app-content [class*="privacyIcon__"],
+.app-shell .app-content [class*="welcomeMark__"] { color:#075FE8 !important; background:#EAF2FF !important; }
+
+@media (max-width: 800px) {
+  .app-content .phase4-analytics-grid,
+  .app-content .phase4-operations-grid,
+  .app-content .phase4-lower-grid { grid-template-columns: minmax(0,1fr) !important; }
+  .app-content .command-kpis { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap:10px !important; }
+  .app-content .command-kpi { min-height:126px; padding:14px !important; }
+  .app-content .sales-trend-svg { min-height:175px; }
+}
+@media (max-width: 520px) {
+  .app-content .command-kpis { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap:9px !important; }
+  .app-content .command-kpi { min-height:122px; padding:12px !important; }
+  .app-content .phase4-analytics-grid,.app-content .phase4-operations-grid,.app-content .phase4-lower-grid { gap:12px !important; }
+  .app-content .chart-summary-row { gap:7px 10px; }
+  .app-content .sales-trend-svg { min-height:155px; }
+  .app-content .product-comparison-bars { padding:13px !important; }
+  .app-content .product-comparison-row { grid-template-columns:minmax(85px,1fr) minmax(60px,.9fr); gap:8px 10px; }
+}
+@media (max-width: 350px) {
+  .app-content .command-kpis { grid-template-columns: minmax(0,1fr) !important; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .app-content .command-kpi { transition: none !important; }
+  .app-content .command-kpi:hover { transform:none !important; }
+}
+
+
+/* LEXA UNIFIED OPERATING SYSTEM FRONTEND PASS — 2026-10-26
+   Scope: visual and interaction consistency for the existing Next.js frontend.
+   The product plan remains the workflow source of truth; this layer does not create
+   business records, invent data, alter permission rules, or simulate external actions. */
+:root {
+  color-scheme: light;
+  --lexa-midnight: #010D27;
+  --lexa-navy: #010D27;
+  --lexa-navy-soft: #0A1B3A;
+  --lexa-blue: #075FE8;
+  --lexa-blue-hover: #064FC4;
+  --lexa-cyan: #01B9BB;
+  --lexa-green: #00B77D;
+  --lexa-green-deep: #087F5B;
+  --lexa-gold: #E1C140;
+  --lexa-red: #E91D3A;
+  --lexa-ink: #17243B;
+  --lexa-muted: #65758B;
+  --lexa-border: #DFE7F0;
+  --lexa-canvas: #F5F8FC;
+  --lexa-surface: #FFFFFF;
+  --lexa-surface-subtle: #F8FAFE;
+  --lexa-shadow-card: 0 7px 24px rgba(1,13,39,.055);
+  --lexa-shadow-raised: 0 16px 42px rgba(1,13,39,.105);
+  --border: var(--lexa-border);
+  --surface: var(--lexa-surface);
+  --foreground: var(--lexa-ink);
+  --background: var(--lexa-canvas);
+  --focus-ring: 3px solid var(--lexa-blue);
+}
+html, body { background: var(--lexa-canvas); color: var(--lexa-ink); }
+::selection { color: #FFFFFF; background: rgba(7,95,232,.88); }
+
+/* One master-identity rule: the supplied artwork is the authority, not the old checkmark. */
+.app-sidebar .app-brand {
+  height: 88px !important;
+  min-height: 88px !important;
+  margin: 0 0 16px !important;
+  padding: 0 !important;
+  border: 1px solid rgba(225,193,64,.15) !important;
+  border-radius: 10px !important;
+  background-color: #010D27 !important;
+  background-image: url('/lexa-master-logo.jpg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+.app-sidebar .app-brand .app-brand-logo,
+.app-sidebar .app-brand > div { display: none !important; }
+.auth-story .auth-story-brand {
+  aspect-ratio: 2 / 1 !important;
+  width: min(100%, 460px) !important;
+  height: auto !important;
+  border-radius: 10px !important;
+  background-color: #010D27 !important;
+  background-image: url('/lexa-master-logo.jpg') !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: contain !important;
+}
+.auth-story .auth-story-brand .auth-story-logo,
+.auth-story .auth-story-brand > div { display: none !important; }
+
+/* The persistent mobile header carries the multicolour horizontal wordmark visibly. */
+@media (max-width: 800px) {
+  .app-topbar::before {
+    content: "" !important;
+    order: 1 !important;
+    display: block !important;
+    flex: 0 0 clamp(82px, 25vw, 108px) !important;
+    width: clamp(82px, 25vw, 108px) !important;
+    min-width: 0 !important;
+    height: 29px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    color: transparent !important;
+    font-size: 0 !important;
+    letter-spacing: 0 !important;
+    background-color: transparent !important;
+    background-image: url('/lexa-wordmark-master.jpg') !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+  }
+  .app-topbar .mobile-menu { order: 0 !important; flex: 0 0 40px !important; min-height: 44px; }
+  .app-topbar .top-search { order: 2 !important; flex: 1 1 auto !important; min-width: 52px !important; }
+  .app-topbar .top-actions { order: 3 !important; min-width: 0; }
+}
+@media (max-width: 520px) {
+  .app-topbar::before { flex-basis: clamp(82px, 25vw, 104px) !important; width: clamp(82px, 25vw, 104px) !important; height: 27px !important; }
+  .app-topbar .top-search { min-width: 48px !important; }
+  .app-topbar .top-search input { min-width: 0 !important; }
+  .app-sidebar .app-brand { height: 82px !important; min-height: 82px !important; }
+}
+@media (max-width: 350px) {
+  .app-topbar::before { flex-basis: 76px !important; width: 76px !important; height: 23px !important; }
+}
+
+/* Common app frame, headings and working surfaces across every business module. */
+.app-shell { background: radial-gradient(ellipse at 82% -12%, rgba(1,185,187,.065), transparent 33%), var(--lexa-canvas); }
+.app-sidebar { color: #EAF0FA; background: linear-gradient(180deg,#010D27 0%,#051735 67%,#081B36 100%); border-right: 1px solid rgba(255,255,255,.075); }
+.app-sidebar .workspace-switch { border-color: rgba(255,255,255,.14); border-radius: 12px; background: rgba(255,255,255,.045); }
+.app-sidebar .app-nav-item { min-height: 44px; border-radius: 10px; }
+.app-sidebar .app-nav-item.active { color: #FFFFFF !important; background: linear-gradient(105deg,rgba(7,95,232,.28),rgba(1,185,187,.15)) !important; box-shadow: inset 3px 0 0 var(--lexa-gold),0 5px 14px rgba(0,0,0,.09) !important; }
+.app-sidebar .app-nav-item.active .app-nav-icon { color: #75E6E2 !important; }
+.app-topbar { background: rgba(255,255,255,.96); border-bottom-color: var(--lexa-border); box-shadow: 0 2px 12px rgba(1,13,39,.025); backdrop-filter: blur(16px); }
+.app-content { width: 100%; max-width: 1660px; margin-inline: auto; min-width: 0; color: var(--lexa-ink); }
+.app-content .workspace-header h1, .app-content .standard-page-header h1, .app-content .customer-toolbar h2 { color: var(--lexa-midnight); letter-spacing: -.04em; text-wrap: balance; }
+.app-content .workspace-breadcrumb, .app-content .page-eyebrow, .app-content .section-label { color: #0753C8; }
+.app-content .workspace-header p, .app-content .standard-page-header p { max-width: 76ch; line-height: 1.62; }
+.app-content .panel, .app-content .command-panel, .app-content .workspace-section,
+.app-content .finance-overview-card, .app-content .work-card, .app-content .stat-card,
+.app-content .quick-links a, .app-content .metric-card {
+  min-width: 0; border-color: var(--lexa-border); box-shadow: var(--lexa-shadow-card);
+}
+.app-content .panel, .app-content .command-panel, .app-content .workspace-section { border-radius: 17px; }
+.app-content .panel-head h2, .app-content .section-head h2, .app-content .workspace-section h2 { color: var(--lexa-midnight); letter-spacing: -.025em; text-wrap: balance; }
+.app-content .panel-subtitle, .app-content .section-head p, .app-content .workspace-section p { line-height: 1.62; }
+.app-content .panel:hover, .app-content .command-panel:hover, .app-content .workspace-section:hover,
+.app-content .finance-overview-card:hover, .app-content .work-card:hover, .app-content .quick-links a:hover {
+  border-color: #CEDBEC; box-shadow: var(--lexa-shadow-raised);
+}
+.app-content .command-toolbar { border-color: #DCE5F0; border-radius: 17px; background: #FFFFFF; box-shadow: var(--lexa-shadow-card); }
+.app-content .command-toolbar strong { color: var(--lexa-midnight); }
+
+/* Dashboard / Command Centre: the period, currency and source context remain in the page. */
+.app-content .command-kpis { gap: 13px; }
+.app-content .command-kpi {
+  min-width: 0; border: 1px solid #DFE7F0 !important; border-top-width: 3px !important;
+  border-radius: 16px !important; background: #FFFFFF !important; box-shadow: var(--lexa-shadow-card) !important;
+  transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+.app-content .command-kpi:first-child { border-top-color: #075FE8 !important; background: linear-gradient(145deg,#FFFFFF 60%,#EEF4FF) !important; }
+.app-content .command-kpi:nth-child(2) { border-top-color: #01B9BB !important; background: linear-gradient(145deg,#FFFFFF 60%,#EAF9FA) !important; }
+.app-content .command-kpi:nth-child(3) { border-top-color: #00B77D !important; background: linear-gradient(145deg,#FFFFFF 60%,#ECF9F2) !important; }
+.app-content .command-kpi:nth-child(4) { border-top-color: #E1C140 !important; background: linear-gradient(145deg,#FFFFFF 60%,#FFF9E7) !important; }
+.app-content .command-kpi strong { color: var(--lexa-midnight) !important; font-variant-numeric: tabular-nums; letter-spacing: -.04em; }
+.app-content .command-kpi:hover { transform: translateY(-2px); box-shadow: var(--lexa-shadow-raised) !important; }
+.app-content .phase4-analytics-grid, .app-content .phase4-operations-grid, .app-content .phase4-lower-grid { gap: 16px; }
+.app-content .trend-panel { border-top: 3px solid var(--lexa-blue) !important; }
+.app-content .top-products-panel { border-top: 3px solid var(--lexa-cyan) !important; }
+.app-content .trend-panel, .app-content .top-products-panel { min-width: 0; overflow: hidden; }
+
+/* Charts: blue = sales/revenue, teal dashed = payment records, green = healthy stock,
+   gold = balance/attention. Same-variable bars use a single solid fill, not decoration. */
+.app-content .trend-chart-wrap { min-width: 0; border-radius: 13px; }
+.app-content .chart-summary-row { color: #314760 !important; line-height: 1.5; }
+.app-content .chart-summary-row small { color: var(--lexa-muted) !important; }
+.app-content .sales-trend-svg { display: block; width: 100%; height: auto; min-height: 205px; background: linear-gradient(180deg,#FFFFFF 0%,#FBFCFF 100%); }
+.app-content .chart-grid-line { stroke: #E5ECF5 !important; }
+.app-content .chart-axis-label { fill: #61728A !important; }
+.app-content .chart-series-line { stroke-width: 3; stroke-linecap: round; stroke-linejoin: round; }
+.app-content .chart-series-sales { stroke: #075FE8 !important; }
+.app-content .chart-series-collected { stroke: #087F91 !important; stroke-dasharray: 7 5 !important; }
+.app-content .chart-series-sales-dot { fill: #075FE8 !important; }
+.app-content .chart-series-collected-dot { fill: #087F91 !important; }
+.app-content .chart-data-details summary { color: #0753C8 !important; font-weight: 750; }
+.app-content .chart-data-table-wrap { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; }
+.app-content .chart-empty-state { border-color: #CFDDEE !important; background: #F8FAFE !important; }
+.app-content .product-comparison-track { background: #E9EEF6 !important; }
+.app-content .product-comparison-track span { background: #075FE8 !important; }
+.app-content .expense-comparison-track span { background: #C58C13 !important; }
+.app-content .payment-method-track span { background: #087F91 !important; }
+.app-content .stock-value-track span { background: #00A875 !important; }
+.app-content .customer-balance-track span { background: #C58C13 !important; }
+.app-content .branch-performance-track span { background: #075FE8 !important; }
+.app-content .top-product-row .product-bar-track span { background: linear-gradient(90deg,#075FE8,#01B9BB) !important; }
+
+/* Tables, filters and forms: critical for product, serial, stock, customer, purchasing and finance records. */
+.app-content .table-wrap, .app-content .command-table-wrap, .app-content .chart-data-table-wrap,
+.app-content [class*="tableWrap__"] { max-width: 100%; overflow-x: auto; overscroll-behavior-x: contain; border-radius: 14px; }
+.app-content .data-table { border-collapse: separate; border-spacing: 0; }
+.app-content .data-table th { color: #40536E !important; background: #F0F5FC !important; border-color: #DFE7F0 !important; font-size: 11px; font-weight: 800; letter-spacing: .015em; }
+.app-content .data-table td { border-color: #E9EEF5; }
+.app-content .data-table tbody tr { transition: background .12s ease; }
+.app-content .data-table tbody tr:hover { background: #F3F7FF !important; }
+.app-content .data-table td a, .app-content .report-record-link { color: #0753C8 !important; text-underline-offset: 3px; }
+.app-content .command-form input, .app-content .command-form select, .app-content .command-form textarea,
+.app-content .form-grid input, .app-content .form-grid select, .app-content .form-grid textarea,
+.app-content .filter-row input, .app-content .filter-row select, .app-content .table-search input,
+.app-content [class*="field__"] input, .app-content [class*="field__"] select,
+.app-content [class*="field__"] textarea, .app-content .search-input {
+  min-width: 0; max-width: 100%; border-color: #D6E1EF; border-radius: 10px; color: var(--lexa-ink); background: #FFFFFF;
+}
+.app-content input:focus-visible, .app-content select:focus-visible, .app-content textarea:focus-visible {
+  border-color: var(--lexa-blue); outline: 3px solid rgba(7,95,232,.18); outline-offset: 1px;
+}
+.app-content input:disabled, .app-content select:disabled, .app-content textarea:disabled { color: #78869A; background: #F2F5F9; }
+.app-content .filter-row, .app-content .form-grid { gap: 12px; }
+
+/* Actions: blue means primary action; green means a positive business result, not every button. */
+.app-shell .button-dark, .app-shell .primary, .auth-page .auth-submit, .auth-page .button-dark {
+  color: #FFFFFF !important; background: #075FE8 !important; border-color: #075FE8 !important;
+  box-shadow: 0 6px 17px rgba(7,95,232,.18) !important;
+}
+.app-shell .button-dark:hover:not(:disabled), .app-shell .primary:hover:not(:disabled),
+.auth-page .auth-submit:hover:not(:disabled), .auth-page .button-dark:hover:not(:disabled) {
+  background: #064FC4 !important; border-color: #064FC4 !important; box-shadow: 0 9px 22px rgba(7,95,232,.23) !important;
+}
+.app-shell .button-soft, .app-shell .secondary, .auth-page .button-soft {
+  color: #173052; background: #FFFFFF; border-color: #D6E1EF; box-shadow: 0 2px 8px rgba(1,13,39,.025);
+}
+.app-shell .button-soft:hover:not(:disabled), .app-shell .secondary:hover:not(:disabled), .auth-page .button-soft:hover:not(:disabled) {
+  color: #0753C8; background: #F3F7FF; border-color: #AFC6E8;
+}
+.app-shell .button-danger, .app-shell .button-danger-soft { color: #A51E33; background: #FFF6F7; border-color: #F0C7CE; }
+.app-shell .period-button.active, .app-shell .period-button[aria-pressed="true"],
+.app-shell .report-period-presets .button[aria-pressed="true"] {
+  color: #064FC4 !important; border-color: #075FE8 !important; background: #EAF2FF !important;
+}
+
+/* Status remains explicit in text; color reinforces rather than replaces the label. */
+.app-content .status.good, .app-content .status-success, .app-content .lexa-badge-success {
+  color: #086448; background: #E6F7EF; border-color: #B8E6D1;
+}
+.app-content .status.warn, .app-content .status-warning, .app-content .lexa-badge-warning {
+  color: #75570C; background: #FFF8E2; border-color: #EAD79D;
+}
+.app-content .status.danger, .app-content .status-error, .app-content .lexa-badge-danger {
+  color: #A51E33; background: #FFF0F2; border-color: #F1C4CC;
+}
+.app-content .status.info, .app-content .status-neutral, .app-content .lexa-badge-info {
+  color: #174B99; background: #EEF4FF; border-color: #C9D9F6;
+}
+.app-content .notice, .app-content .inline-message, .app-content .empty-state, .app-content .empty-inline,
+.app-content .chart-empty-state, .app-content [class*="notice__"], .app-content [class*="empty__"] { overflow-wrap: anywhere; }
+.app-content .notice.notice-error { border-color: #F1C4CC; background: #FFF5F6; color: #8E2132; }
+.app-content .notice.notice-info { border-color: #C9D9F6; background: #F1F6FF; color: #214D91; }
+
+/* Module-specific overlays for CSS-module screens: AI, documents, brief, forecast, chat. */
+.app-shell .app-content [class*="privacyBar__"],
+.app-shell .app-content [class*="chatShell__"],
+.app-shell .app-content [class*="documentList__"],
+.app-shell .app-content [class*="documentDetail__"],
+.app-shell .app-content [class*="summary__"],
+.app-shell .app-content [class*="card__"],
+.app-shell .app-content [class*="item__"],
+.app-shell .app-content [class*="method__"] {
+  border-color: #DFE7F0; box-shadow: var(--lexa-shadow-card);
+}
+.app-shell .app-content [class*="userMessage__"] { background: #EAF2FF; border-color: #C8D9F4; }
+.app-shell .app-content [class*="assistantMessage__"] { background: #FFFFFF; border-color: #DFE7F0; }
+.app-shell .app-content [class*="documentItemActive__"],
+.app-shell .app-content [class*="documentItem__"]:hover { background: #EFF5FF; }
+.app-shell .app-content [class*="documentGlyph__"],
+.app-shell .app-content [class*="privacyIcon__"],
+.app-shell .app-content [class*="welcomeMark__"] { color: #075FE8; background: #EAF2FF; }
+.app-shell .app-content [class*="count__"],
+.app-shell .app-content [class*="summaryStats__"] > div,
+.app-shell .app-content [class*="metrics__"] > div,
+.app-shell .app-content [class*="metric__"] { background: #F2F6FC; border-color: #DFE7F0; }
+.app-shell .app-content [class*="summary__"] h2,
+.app-shell .app-content [class*="summaryHead__"] h2,
+.app-shell .app-content [class*="cardHead__"] h3 { color: var(--lexa-midnight); }
+.app-shell .app-content [class*="notice__"] { border-color: #E9D9AB; background: #FFFBEE; color: #705510; }
+.app-shell .app-content [class*="suggestion__"] { border-color: #DFE7F0; background: #FFFFFF; }
+.app-shell .app-content [class*="suggestion__"]:hover { border-color: #9ABAE8; background: #F4F8FF; }
+.app-shell .app-content [class*="composer__"] textarea:focus { border-color: var(--lexa-blue); box-shadow: 0 0 0 3px rgba(7,95,232,.13); }
+
+/* The shell's bottom bar and controls meet comfortable touch-size targets. */
+.mobile-nav { border-color: #D5DEEB; background: rgba(255,255,255,.97); box-shadow: 0 12px 32px rgba(1,13,39,.13); backdrop-filter: blur(18px); }
+.mobile-nav a, .mobile-nav button { min-height: 46px; border-radius: 12px; }
+.mobile-nav a.active, .mobile-nav button.active { color: #064FC4; background: #EAF2FF; }
+.mobile-nav a.active .mobile-nav-icon, .mobile-nav button.active .mobile-nav-icon { color: #075FE8; }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible {
+  outline: 3px solid rgba(7,95,232,.88); outline-offset: 3px;
+}
+.app-sidebar .app-nav-item:focus-visible, .app-sidebar .workspace-switch:focus-visible,
+.mobile-nav a:focus-visible, .mobile-nav button:focus-visible { outline-color: var(--lexa-gold); }
+
+@media (max-width: 800px) {
+  .app-content { padding-top: 16px; }
+  .app-content .phase4-analytics-grid, .app-content .phase4-operations-grid,
+  .app-content .phase4-lower-grid { grid-template-columns: minmax(0,1fr) !important; }
+  .app-content .command-kpis { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 10px !important; }
+  .app-content .command-kpi { min-height: 126px; padding: 14px !important; }
+  .app-content .sales-trend-svg { min-height: 175px; }
+  .app-content .workspace-header { gap: 12px; }
+  .app-content .workspace-header .header-actions { flex-wrap: wrap; }
+}
+@media (max-width: 520px) {
+  .app-content { padding-inline: 13px; padding-bottom: calc(28px + env(safe-area-inset-bottom)); }
+  .app-content .command-toolbar { padding: 13px; border-radius: 14px; }
+  .app-content .command-toolbar .toolbar-actions { display: grid; grid-template-columns: minmax(0,1fr); }
+  .app-content .command-toolbar .toolbar-actions > * { width: 100%; justify-content: center; }
+  .app-content .command-kpis { grid-template-columns: repeat(2,minmax(0,1fr)) !important; gap: 9px !important; }
+  .app-content .command-kpi { min-height: 122px; padding: 12px !important; border-radius: 14px !important; }
+  .app-content .command-kpi strong { font-size: clamp(15px,4.3vw,19px); overflow-wrap: anywhere; }
+  .app-content .phase4-analytics-grid, .app-content .phase4-operations-grid,
+  .app-content .phase4-lower-grid { gap: 12px !important; }
+  .app-content .panel-head, .app-content .phase4-panel-head { flex-wrap: wrap; align-items: flex-start; gap: 12px; }
+  .app-content .chart-summary-row { align-items: flex-start; gap: 7px 10px; }
+  .app-content .chart-summary-row small { flex: 1 1 100%; margin-left: 0; }
+  .app-content .sales-trend-svg { min-height: 155px; }
+  .app-content .product-comparison-bars { padding: 13px !important; }
+  .app-content .product-comparison-row { grid-template-columns: minmax(85px,1fr) minmax(60px,.9fr); gap: 8px 10px; }
+  .app-content .product-comparison-track { grid-column: 1 / -1; grid-row: 2; }
+  .app-content .product-comparison-value { grid-column: 2; grid-row: 1; align-self: start; font-size: 11px; }
+  .app-content .chart-data-table { min-width: 560px; }
+  .app-content .workspace-header .header-actions { width: 100%; display: grid; grid-template-columns: minmax(0,1fr); }
+  .app-content .workspace-header .header-actions > * { width: 100%; justify-content: center; }
+  .app-content [class*="suggestionGrid__"] { grid-template-columns: minmax(0,1fr); }
+  .app-content [class*="messages__"] { max-height: min(50dvh,460px); }
+  .app-content [class*="composerFooter__"] { align-items: stretch; flex-direction: column; }
+  .app-content [class*="summaryStats__"], .app-content [class*="counts__"] { grid-template-columns: repeat(2,minmax(0,1fr)); }
+}
+@media (max-width: 350px) {
+  .app-content .command-kpis { grid-template-columns: minmax(0,1fr) !important; }
+  .app-content .command-kpi { min-height: 118px; }
+  .mobile-nav small { font-size: 8px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .app-content .command-kpi:hover, .app-content .finance-overview-card:hover,
+  .app-content .work-card:hover, .app-content .quick-links a:hover { transform: none !important; }
+}

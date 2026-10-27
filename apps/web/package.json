@@ -1,0 +1,38 @@
+{
+  "name": "lexa-web",
+  "private": true,
+  "version": "2.14.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs",
+    "test:e2e": "playwright test --config=playwright.config.ts",
+    "test:e2e:phase5": "playwright test --config=playwright.config.ts e2e/sales-sales-acceptance.spec.ts",
+    "test:e2e:phase6": "playwright test --config=playwright.config.ts e2e/inventory-inventory-acceptance.spec.ts",
+    "test:e2e:phase7": "playwright test --config=playwright.config.ts e2e/approvals-purchasing-acceptance.spec.ts e2e/approvals-approval-limits-acceptance.spec.ts e2e/approvals-partial-allocations-acceptance.spec.ts e2e/approvals-reversal-acceptance.spec.ts",
+    "test:e2e:phase7:security": "playwright test --config=playwright.config.ts e2e/approvals-authorization-acceptance.spec.ts",
+    "test:e2e:phase7:reversal": "playwright test --config=playwright.config.ts e2e/approvals-reversal-acceptance.spec.ts",
+    "test:e2e:phase7:approval": "playwright test --config=playwright.config.ts e2e/approvals-approval-limits-acceptance.spec.ts",
+    "test:e2e:phase8": "playwright test --config=playwright.config.ts e2e/finance-reports-acceptance.spec.ts",
+    "test:e2e:phase2": "playwright test --config=playwright.config.ts e2e/workflow-transaction-acceptance.spec.ts",
+    "test:e2e:phase7:allocation": "playwright test --config=playwright.config.ts e2e/approvals-partial-allocations-acceptance.spec.ts"
+  },
+  "dependencies": {
+    "next": "16.4.0",
+    "react": "19.3.0",
+    "react-dom": "19.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "tailwindcss": "4.3.3",
+    "typescript": "5.9.3",
+    "@playwright/test": "1.64.1"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}
