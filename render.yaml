@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: LEXA
+    runtime: python
+    rootDir: apps/api
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health  # Liveness only; /ready separately reports schema/dependency readiness
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: APP_ENV
+        value: production
+      - key: DATABASE_URL
+        sync: false
+      - key: DATABASE_URL_UNPOOLED
+        sync: false
+      - key: DATABASE_APP_ROLE
+        sync: false
+      - key: DATABASE_LOGIN_ROLE
+        sync: false
+      - key: LEXA_NEON_PROJECT_ID
+        value: wispy-mud-75323042
+      - key: LEXA_NEON_BRANCH_ID
+        value: br-soft-star-b1dj2m2w
+      - key: REDIS_URL
+        sync: false
+      - key: JWT_SECRET
+        sync: false
+      - key: JWT_ISSUER
+        value: lexa
+      - key: JWT_AUDIENCE
+        value: lexa-web
+      - key: ACCESS_TOKEN_MINUTES
+        value: "30"
+      - key: REFRESH_TOKEN_DAYS
+        value: "30"
+      - key: CORS_ORIGINS
+        sync: false
+      - key: LEXA_PROXY_SHARED_SECRET
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: EMAIL_FROM
+        sync: false
+      - key: PUBLIC_APP_URL
+        value: https://lexa-green.vercel.app
+      - key: PASSWORD_RESET_MINUTES
+        value: "20"
+      - key: EMAIL_TIMEOUT_SECONDS
+        value: "8"
