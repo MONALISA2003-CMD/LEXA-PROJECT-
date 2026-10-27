@@ -2,45 +2,49 @@ name: LEXA AI Builder Validation
 
 on:
   push:
-    branches: [main]
-    paths:
-      - 'apps/api/app/intelligence/**'
-      - 'apps/api/app/routes/ai_assistant.py'
-      - 'apps/api/app/business_insights.py'
-      - 'apps/api/tests/test_ai_assistant.py'
-      - 'apps/api/tests/test_lexa_assistant_guardrails.py'
-      - 'apps/api/tests/test_lexa_business_grounding.py'
-      - 'apps/api/tests/test_intelligence_*.py'
-      - 'apps/api/tests/test_demand_forecast.py'
-      - 'apps/api/tests/test_business_insights.py'
-      - 'apps/web/**'
+    branches:
+      - '**'
   pull_request:
-    branches: [main]
-    paths:
-      - 'apps/api/app/intelligence/**'
-      - 'apps/api/app/routes/ai_assistant.py'
-      - 'apps/api/app/business_insights.py'
-      - 'apps/api/tests/test_ai_assistant.py'
-      - 'apps/api/tests/test_lexa_assistant_guardrails.py'
-      - 'apps/api/tests/test_lexa_business_grounding.py'
-      - 'apps/api/tests/test_intelligence_*.py'
-      - 'apps/api/tests/test_demand_forecast.py'
-      - 'apps/api/tests/test_business_insights.py'
-      - 'apps/web/**'
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: lexa-ai-builder-${{ github.ref }}
+  group: lexa-ai-builder-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
+  detect-source:
+    name: Detect imported application source
+    runs-on: ubuntu-24.04
+    outputs:
+      source_present: ${{ steps.detect.outputs.source_present }}
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v7
+
+      - name: Detect API and web source
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -f apps/api/pyproject.toml && -f apps/web/package.json && -f apps/web/package-lock.json ]]; then
+            echo 'source_present=true' >> "$GITHUB_OUTPUT"
+            echo 'Application source is present; AI validation jobs will run.'
+          else
+            echo 'source_present=false' >> "$GITHUB_OUTPUT"
+            echo 'Application source is not imported yet; AI validation jobs will skip cleanly.'
+          fi
+
   ai-api-tests:
     name: AI assistant, grounding, policy and intelligence tests
+    needs: detect-source
+    if: ${{ needs.detect-source.outputs.source_present == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: apps/api
@@ -52,7 +56,6 @@ jobs:
       DATABASE_APP_ROLE: ''
       DATABASE_LOGIN_ROLE: lexa
       PUBLIC_APP_URL: http://localhost:3000
-      # Empty provider keys keep this workflow offline/mock-only.
       GEMINI_API_KEY: ''
       GROQ_API_KEY: ''
       CEREBRAS_API_KEY: ''
@@ -90,8 +93,10 @@ jobs:
 
   ai-web-contracts:
     name: Verify the web build and frontend contracts
+    needs: detect-source
+    if: ${{ needs.detect-source.outputs.source_present == 'true' }}
     runs-on: ubuntu-24.04
-    timeout-minutes: 20
+    timeout-minutes: 25
     defaults:
       run:
         working-directory: apps/web
@@ -117,3 +122,4 @@ jobs:
 
       - name: Build production frontend
         run: npm run build
+        
