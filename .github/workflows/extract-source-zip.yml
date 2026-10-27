@@ -1,6 +1,12 @@
-name: LEXA Source ZIP Import
+name: LEXA Source ZIP Auto Import
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'LEXA-clean-source.zip'
+      - '.github/workflows/extract-source-zip.yml'
   workflow_dispatch:
     inputs:
       archive_sha256:
@@ -9,7 +15,7 @@ on:
         type: string
         default: 6c5bbafef525f5aeae345b793f2587662046385f5ac0a422884fbb83d4a01dfd
       expected_head_sha:
-        description: Full 40-character HEAD SHA of main after the ZIP and workflows have been committed
+        description: Full 40-character HEAD SHA of main (required for manual runs)
         required: true
         type: string
       confirmation:
@@ -32,8 +38,21 @@ concurrency:
 
 jobs:
   import-source:
-    name: Verify ZIP and open source-import pull request
-    if: ${{ github.ref == 'refs/heads/main' && inputs.confirmation == 'IMPORT_CLEAN_SOURCE' }}
+    name: Verify ZIP, remove it from import branch, and open a PR
+    if: >-
+      ${{
+        github.ref == 'refs/heads/main' &&
+        (
+          (github.event_name == 'push' &&
+            (
+              contains(github.event.head_commit.added, 'LEXA-clean-source.zip') ||
+              contains(github.event.head_commit.modified, 'LEXA-clean-source.zip') ||
+              contains(github.event.head_commit.modified, '.github/workflows/extract-source-zip.yml')
+            )
+          ) ||
+          (github.event_name == 'workflow_dispatch' && inputs.confirmation == 'IMPORT_CLEAN_SOURCE')
+        )
+      }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
 
@@ -45,23 +64,51 @@ jobs:
           fetch-depth: 0
           persist-credentials: true
 
-      - name: Verify the expected base commit and stage the archive safely
+      - name: Verify target repository and expected base commit
         shell: bash
         env:
-          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
-          ARCHIVE_SHA256: ${{ inputs.archive_sha256 }}
+          EXPECTED_HEAD_SHA: ${{ github.event_name == 'push' && github.event.after || inputs.expected_head_sha }}
         run: |
           set -euo pipefail
-          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-fA-F]{40}$ ]] || { echo 'Expected HEAD must be a full 40-character SHA.' >&2; exit 1; }
-          [[ "$ARCHIVE_SHA256" =~ ^[0-9a-fA-F]{64}$ ]] || { echo 'Archive SHA-256 must be 64 hexadecimal characters.' >&2; exit 1; }
-          [[ "$(git branch --show-current)" == "main" ]] || { echo 'Run this workflow from main.' >&2; exit 1; }
+          [[ "$GITHUB_REPOSITORY" == "MONALISA2003-CMD/LEXA-PROJECT-" ]] || {
+            echo "Unexpected repository: $GITHUB_REPOSITORY" >&2
+            exit 1
+          }
+          [[ "$EXPECTED_HEAD_SHA" =~ ^[0-9a-fA-F]{40}$ ]] || {
+            echo 'Expected HEAD must be a full 40-character SHA.' >&2
+            exit 1
+          }
+          [[ "$(git branch --show-current)" == "main" ]] || {
+            echo 'Extractor must run from main.' >&2
+            exit 1
+          }
           actual_head="$(git rev-parse HEAD)"
-          [[ "$actual_head" == "$EXPECTED_HEAD_SHA" ]] || { echo "main changed: expected $EXPECTED_HEAD_SHA, found $actual_head" >&2; exit 1; }
-          [[ -z "$(git status --porcelain)" ]] || { echo 'Checkout is not clean.' >&2; exit 1; }
-          test -s "$GITHUB_WORKSPACE/LEXA-clean-source.zip" || { echo 'Upload LEXA-clean-source.zip to the repository root first.' >&2; exit 1; }
+          [[ "$actual_head" == "$EXPECTED_HEAD_SHA" ]] || {
+            echo "main changed: expected $EXPECTED_HEAD_SHA, found $actual_head" >&2
+            exit 1
+          }
+          [[ -z "$(git status --porcelain)" ]] || {
+            echo 'Checkout is not clean.' >&2
+            exit 1
+          }
+          test -s "$GITHUB_WORKSPACE/LEXA-clean-source.zip" || {
+            echo 'LEXA-clean-source.zip is missing; nothing to import.' >&2
+            exit 1
+          }
           cp "$GITHUB_WORKSPACE/LEXA-clean-source.zip" "$RUNNER_TEMP/LEXA-clean-source.zip"
+          echo "Repository verified: $GITHUB_REPOSITORY"
           echo "Base commit verified: $actual_head"
 
+      - name: Verify archive checksum and safely stage source
+        shell: bash
+        env:
+          ARCHIVE_SHA256: ${{ github.event_name == 'push' && '6c5bbafef525f5aeae345b793f2587662046385f5ac0a422884fbb83d4a01dfd' || inputs.archive_sha256 }}
+        run: |
+          set -euo pipefail
+          [[ "$ARCHIVE_SHA256" =~ ^[0-9a-fA-F]{64}$ ]] || {
+            echo 'Archive SHA-256 must be 64 hexadecimal characters.' >&2
+            exit 1
+          }
           python - <<'PY'
           import hashlib, os, shutil, stat
           from pathlib import Path, PurePosixPath
@@ -94,6 +141,7 @@ jobs:
               raise SystemExit('ZIP is empty or contains too many files.')
           if sum(i.file_size for i in files) > 500 * 1024 * 1024:
               raise SystemExit('ZIP uncompressed size exceeds the 500 MiB safety limit.')
+
           for info in zf.infolist():
               raw = info.filename
               if '\\' in raw or raw.startswith('/') or (len(raw) >= 2 and raw[1] == ':'):
@@ -109,6 +157,7 @@ jobs:
                   raise SystemExit(f'Non-regular archive entry refused: {raw!r}')
               if info.is_dir():
                   continue
+
               name = rel.as_posix()
               if name in seen or name.casefold() in folded:
                   raise SystemExit(f'Duplicate or case-colliding archive path: {name}')
@@ -128,7 +177,7 @@ jobs:
           for info in files:
               rel = PurePosixPath(info.filename)
               name = rel.as_posix()
-              # Workflow files are installed separately in the destination repository.
+              # Workflow YAML files are managed in the destination repository, not by the ZIP.
               if name.startswith('.github/workflows/'):
                   continue
               destination = stage.joinpath(*rel.parts)
@@ -143,34 +192,40 @@ jobs:
           if count == 0:
               raise SystemExit('No source files were staged.')
           print(f'Archive SHA-256 verified: {digest}')
-          print(f'Staged {count} source files; ZIP-contained workflows were skipped.')
+          print(f'Staged {count} source files; workflow files inside the ZIP were skipped.')
           PY
 
-      - name: Create a review branch
+      - name: Create an isolated review branch
         shell: bash
         env:
-          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+          EXPECTED_HEAD_SHA: ${{ github.event_name == 'push' && github.event.after || inputs.expected_head_sha }}
         run: |
           set -euo pipefail
-          [[ "$(git rev-parse HEAD)" == "$EXPECTED_HEAD_SHA" ]] || { echo 'Base commit changed.' >&2; exit 1; }
-          git switch -c "automation/import-clean-source-${GITHUB_RUN_ID}"
+          [[ "$(git rev-parse HEAD)" == "$EXPECTED_HEAD_SHA" ]] || {
+            echo 'Base commit changed before branch creation.' >&2
+            exit 1
+          }
+          git switch -c "automation/import-clean-source-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
 
-      - name: Replace source files while preserving the separately installed workflows
+      - name: Replace source tree and remove ZIP from the import branch
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import shutil, os
+          import os, shutil
           from pathlib import Path
+
           root = Path(os.environ['GITHUB_WORKSPACE'])
           stage = Path(os.environ['RUNNER_TEMP']) / 'lexa-source-stage'
           preserved = Path(os.environ['RUNNER_TEMP']) / 'lexa-preserved-workflows'
           workflows = root / '.github' / 'workflows'
           if not workflows.is_dir() or not any(workflows.iterdir()):
-              raise SystemExit('Install extract-source-zip.yml, ci.yml, and ai-builder.yml under .github/workflows before importing.')
+              raise SystemExit('Required workflow files are missing under .github/workflows.')
           if preserved.exists():
               shutil.rmtree(preserved)
           shutil.copytree(workflows, preserved)
+
+          # Clear the repository work tree, leaving Git metadata untouched.
           for child in list(root.iterdir()):
               if child.name == '.git':
                   continue
@@ -178,41 +233,64 @@ jobs:
                   shutil.rmtree(child)
               else:
                   child.unlink()
+
+          # Copy staged application source. The archive itself is not staged, so the ZIP is deleted.
           for child in stage.iterdir():
               target = root / child.name
               if child.is_dir():
                   shutil.copytree(child, target)
               else:
                   shutil.copy2(child, target)
+
           target_workflows = root / '.github' / 'workflows'
           target_workflows.mkdir(parents=True, exist_ok=True)
           shutil.copytree(preserved, target_workflows, dirs_exist_ok=True)
-          print('Source tree imported; manually installed workflow files were preserved.')
+          if (root / 'LEXA-clean-source.zip').exists():
+              raise SystemExit('Safety check failed: source ZIP still exists after import staging.')
+          print('Source tree staged. LEXA-clean-source.zip is removed from the import branch.')
+          print('The three separately installed workflow files were preserved.')
           PY
           git status --short
           git add --all
           git diff --cached --check -- .github/workflows
           git diff --cached --quiet && { echo 'No changes to import.' >&2; exit 1; }
+          if git diff --cached --name-only | grep -Fxq 'LEXA-clean-source.zip'; then
+            echo 'Archive deletion is staged for the import PR.'
+          else
+            echo 'Expected ZIP deletion is not staged; aborting.' >&2
+            exit 1
+          fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'chore: import verified clean LEXA source'
+          git commit -m 'chore: import clean LEXA source and remove archive'
 
-      - name: Push the review branch and open a pull request
+      - name: Push review branch and open a pull request
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
-          EXPECTED_HEAD_SHA: ${{ inputs.expected_head_sha }}
+          EXPECTED_HEAD_SHA: ${{ github.event_name == 'push' && github.event.after || inputs.expected_head_sha }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
           set -euo pipefail
           remote_head="$(git ls-remote origin refs/heads/main | awk 'NR == 1 {print $1}')"
-          [[ "$remote_head" == "$EXPECTED_HEAD_SHA" ]] || { echo "main advanced during import; expected $EXPECTED_HEAD_SHA, found ${remote_head:-unknown}. No push attempted." >&2; exit 1; }
+          [[ "$remote_head" == "$EXPECTED_HEAD_SHA" ]] || {
+            echo "main advanced during import; expected $EXPECTED_HEAD_SHA, found ${remote_head:-unknown}. No push attempted." >&2
+            exit 1
+          }
           branch="$(git branch --show-current)"
           git push --set-upstream origin "$branch"
           gh pr create \
             --base main \
             --head "$branch" \
-            --title 'chore: import clean LEXA source' \
-            --body 'Imports the SHA-256-verified source ZIP into a review branch. Workflow files were installed separately and preserved. Review the diff and wait for CI before merging. Neon PostgreSQL and hosted Render/Vercel resources are not touched by this workflow.'
-          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/dispatches" --method POST -f "ref=${branch}"
-          echo "Review branch pushed and CI dispatch requested: $branch"
+            --title 'chore: import clean LEXA source and remove ZIP' \
+            --body 'Automatically imports the SHA-256-verified clean source ZIP into a review branch and deletes the ZIP in this PR. The ZIP disappears from main when this PR is merged. Review CI before merging. This workflow does not alter Neon PostgreSQL, Render, or Vercel.'
+
+          # Push/PR events caused by GITHUB_TOKEN do not reliably start other workflows.
+          # Explicitly dispatch both validators for the imported source branch.
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ci.yml/dispatches" \
+            --method POST -f "ref=${branch}"
+          gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/ai-builder.yml/dispatches" \
+            --method POST -f "ref=${branch}"
+          echo "Import PR created for branch: $branch"
+          echo 'CI and AI validation dispatches requested for the import branch.'
+          
